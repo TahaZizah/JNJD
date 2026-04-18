@@ -1,0 +1,182 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-enable-uuid-extension
+      author: jnjd
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+  - changeSet:
+      id: 002-create-registration-table
+      author: jnjd
+      changes:
+        - createTable:
+            tableName: registration
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: team_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_official
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-member-table
+      author: jnjd
+      changes:
+        - createTable:
+            tableName: member
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: registration_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_member_registration
+                    references: registration(id)
+                    deleteCascade: true
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tshirt_size
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tshirt_size_custom
+                  type: VARCHAR(50)
+              - column:
+                  name: school_name
+                  type: VARCHAR(255)
+              - column:
+                  name: proof_file_key
+                  type: VARCHAR(512)
+
+  - changeSet:
+      id: 004-create-status-history-table
+      author: jnjd
+      changes:
+        - createTable:
+            tableName: registration_status_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: registration_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_history_registration
+                    references: registration(id)
+                    deleteCascade: true
+              - column:
+                  name: old_status
+                  type: VARCHAR(20)
+              - column:
+                  name: new_status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed_by
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 005-create-indexes
+      author: jnjd
+      changes:
+        - createIndex:
+            tableName: registration
+            indexName: idx_registration_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: registration
+            indexName: idx_registration_is_official
+            columns:
+              - column:
+                  name: is_official
+        - createIndex:
+            tableName: member
+            indexName: idx_member_registration_id
+            columns:
+              - column:
+                  name: registration_id
+        - createIndex:
+            tableName: registration_status_history
+            indexName: idx_history_registration_id
+            columns:
+              - column:
+                  name: registration_id

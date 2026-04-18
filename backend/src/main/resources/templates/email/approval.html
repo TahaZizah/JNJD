@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JNJD Registration Approved</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a0f; color: #e2e8f0; }
+        .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .card { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 1px solid rgba(99,102,241,0.3); border-radius: 16px; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 32px; text-align: center; }
+        .header-icon { font-size: 48px; margin-bottom: 16px; }
+        .header h1 { color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+        .header p { color: rgba(255,255,255,0.85); font-size: 16px; margin-top: 8px; }
+        .body { padding: 40px 32px; }
+        .greeting { font-size: 18px; font-weight: 600; color: #f1f5f9; margin-bottom: 16px; }
+        .text { font-size: 15px; color: #94a3b8; line-height: 1.7; margin-bottom: 16px; }
+        .status-badge { display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; font-size: 13px; font-weight: 700; letter-spacing: 1px; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; margin: 8px 0 24px 0; }
+        .info-box { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+        .payment-box { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(234,88,12,0.1)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .payment-box h3 { color: #f59e0b; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+        .payment-amount { font-size: 32px; font-weight: 800; color: #fbbf24; margin: 8px 0; }
+        .payment-contact { font-size: 14px; color: #94a3b8; margin-top: 8px; }
+        .payment-contact a { color: #818cf8; text-decoration: none; }
+        .footer { padding: 24px 32px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .footer p { font-size: 12px; color: #475569; line-height: 1.6; }
+        .footer strong { color: #6366f1; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="card">
+        <div class="header">
+            <div class="header-icon">🏆</div>
+            <h1>Registration Approved!</h1>
+            <p>JNJD 19th Edition — Journées Nationales de Jeux Développés</p>
+        </div>
+        <div class="body">
+            <p class="greeting">Hello, <span th:text="${memberName}">Member Name</span>!</p>
+            <p class="text">We're thrilled to let you know that your team's registration for the <strong>19th Edition of JNJD</strong> has been officially approved.</p>
+            <div class="status-badge">✅ Approved</div>
+
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">Team Name</span>
+                    <span class="info-value" th:text="${teamName}">Team Name</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Your Role</span>
+                    <span class="info-value" th:text="${role}">Captain</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Registration ID</span>
+                    <span class="info-value" th:text="${registrationId}">uuid</span>
+                </div>
+            </div>
+
+            <div class="payment-box">
+                <h3>💳 Payment Required</h3>
+                <p class="text" style="margin-bottom: 4px;">To confirm your participation, please complete your payment:</p>
+                <div class="payment-amount" th:text="${paymentAmount}">180 MAD</div>
+                <p class="payment-contact">
+                    For payment instructions, contact us at
+                    <a th:href="'mailto:' + ${paymentContact}" th:text="${paymentContact}">cit.inpt@gmail.com</a>
+                </p>
+            </div>
+
+            <p class="text">Please keep this email as proof of your approved registration. We look forward to seeing your team at JNJD!</p>
+        </div>
+        <div class="footer">
+            <p>This email was sent automatically. Do not reply directly.<br>
+            Questions? Contact <strong th:text="${paymentContact}">cit.inpt@gmail.com</strong></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
