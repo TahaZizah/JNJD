@@ -31,4 +31,7 @@ public class MemberRequest {
     private String schoolName;
 
     private String proofFileKey;
+
+    // Optional: CV for recruiter visibility at event stands
+    private String cvFileKey;
 }

@@ -3,12 +3,14 @@ import RegistrationPage from './pages/RegistrationPage'
 import ConfirmationPage from './pages/ConfirmationPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboard from './pages/AdminDashboard'
+import SponsoringPage from './pages/SponsoringPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<RegistrationPage />} />
+      <Route path="/sponsoring" element={<SponsoringPage />} />
       <Route path="/confirmation/:id" element={<ConfirmationPage />} />
       <Route path="/admin" element={<AdminLoginPage />} />
       <Route

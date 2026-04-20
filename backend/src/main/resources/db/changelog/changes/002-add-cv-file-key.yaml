@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-cv-file-key-to-member
+      author: taha
+      comment: >
+        Adds optional cv_file_key column to the member table so that
+        CVs uploaded in the Career & Recruitment step can be stored
+        per-member for recruiter access at JNJD event stands.
+      changes:
+        - addColumn:
+            tableName: member
+            columns:
+              - column:
+                  name: cv_file_key
+                  type: varchar(512)
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: member
+            columnName: cv_file_key

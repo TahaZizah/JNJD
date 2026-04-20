@@ -10,6 +10,7 @@ export interface MemberFormData {
   tshirtSizeCustom?: string
   schoolName?: string
   proofFileKey?: string
+  cvFileKey?: string
 }
 
 export interface RegistrationFormData {
@@ -38,6 +39,7 @@ export interface MemberDetail {
   tshirtSizeCustom?: string
   schoolName?: string
   proofFileKey?: string
+  cvFileKey?: string
 }
 
 export interface StatusHistoryEntry {

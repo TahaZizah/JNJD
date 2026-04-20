@@ -3,12 +3,12 @@ import { FormInput, FormSelect } from './FormFields'
 import type { RegistrationFormValues } from '../schemas/registration'
 
 const TSHIRT_OPTIONS = [
-  { value: 'XS', label: 'XS — Extra Small' },
-  { value: 'S',  label: 'S — Small' },
-  { value: 'M',  label: 'M — Medium' },
-  { value: 'L',  label: 'L — Large' },
-  { value: 'XL', label: 'XL — Extra Large' },
-  { value: 'XXL',label: 'XXL — Double XL' },
+  { value: 'XS',    label: 'XS — Extra Small' },
+  { value: 'S',     label: 'S — Small' },
+  { value: 'M',     label: 'M — Medium' },
+  { value: 'L',     label: 'L — Large' },
+  { value: 'XL',    label: 'XL — Extra Large' },
+  { value: 'XXL',   label: 'XXL — Double XL' },
   { value: 'OTHER', label: 'Other (specify)' },
 ]
 
@@ -20,15 +20,19 @@ const ROLE_LABELS: Record<number, { title: string; subtitle: string; className: 
 
 interface Props {
   index: number
-  isOfficial: boolean
+  /** @deprecated use showSchool instead */
+  isOfficial?: boolean
+  /** When true renders the school / university field inside this card */
+  showSchool?: boolean
 }
 
-export default function MemberFieldGroup({ index, isOfficial }: Props) {
+export default function MemberFieldGroup({ index, isOfficial, showSchool }: Props) {
   const { control, watch } = useFormContext<RegistrationFormValues>()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ctrl = control as any
-  const tshirtSize = watch(`members.${index}.tshirtSize` as any)
-  const role = ROLE_LABELS[index]
+  const ctrl        = control as any
+  const tshirtSize  = watch(`members.${index}.tshirtSize` as any)
+  const role        = ROLE_LABELS[index]
+  const renderSchool = showSchool ?? isOfficial ?? false
 
   return (
     <div className="member-card animate-fade-in" style={{ animationDelay: `${index * 80}ms` }}>
@@ -85,13 +89,13 @@ export default function MemberFieldGroup({ index, isOfficial }: Props) {
           />
         )}
 
-        {isOfficial && (
+        {renderSchool && (
           <FormInput
             name={`members.${index}.schoolName`}
             control={ctrl}
             label="School / University"
             placeholder="INPT Rabat"
-            required
+            className="col-span-2"
           />
         )}
       </div>

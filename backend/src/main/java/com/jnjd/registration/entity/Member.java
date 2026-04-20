@@ -49,4 +49,7 @@ public class Member {
 
     @Column(name = "proof_file_key", length = 512)
     private String proofFileKey;
+
+    @Column(name = "cv_file_key", length = 512)
+    private String cvFileKey;
 }

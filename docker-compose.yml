@@ -1,6 +1,6 @@
 services:
 
-  # ── PostgreSQL ─────────────────────────────────────────────
+  # ── PostgreSQL ──────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     container_name: jnjd-postgres
@@ -13,28 +13,32 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - jnjd-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── Redis ──────────────────────────────────────────────────
+  # ── Redis ────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: jnjd-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - jnjd-net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── MinIO ──────────────────────────────────────────────────
+  # ── MinIO ────────────────────────────────────────────────────
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-04-08T15-41-24Z
     container_name: jnjd-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
@@ -46,13 +50,16 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    networks:
+      - jnjd-net
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
-  # ── MinIO init (create bucket) ─────────────────────────────
+  # ── MinIO init (create bucket) ────────────────────────────────
   minio-init:
     image: minio/mc:latest
     container_name: jnjd-minio-init
@@ -71,22 +78,27 @@ services:
         echo 'Bucket $$MINIO_BUCKET created and set to private.' &&
         exit 0
       "
+    networks:
+      - jnjd-net
     restart: "no"
 
-  # ── MailHog (Local SMTP Testing) ───────────────────────────
+  # ── MailHog (local SMTP) ─────────────────────────────────────
   mailhog:
-    image: mailhog/mailhog:latest
+    image: mailhog/mailhog:v1.0.1
     container_name: jnjd-mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025" # SMTP port
-      - "8025:8025" # Web UI
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - jnjd-net
 
-  # ── Spring Boot Backend ────────────────────────────────────
+  # ── Spring Boot Backend ──────────────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: jnjd-backend
     container_name: jnjd-backend
     restart: unless-stopped
     depends_on:
@@ -122,6 +134,8 @@ services:
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
     ports:
       - "8080:8080"
+    networks:
+      - jnjd-net
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
       interval: 15s
@@ -129,11 +143,12 @@ services:
       retries: 5
       start_period: 30s
 
-  # ── React Frontend (Nginx) ─────────────────────────────────
+  # ── React Frontend (Nginx) ───────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: jnjd-frontend
     container_name: jnjd-frontend
     restart: unless-stopped
     depends_on:
@@ -141,7 +156,13 @@ services:
         condition: service_healthy
     ports:
       - "80:80"
+    networks:
+      - jnjd-net
 
 volumes:
   pgdata:
   miniodata:
+
+networks:
+  jnjd-net:
+    driver: bridge

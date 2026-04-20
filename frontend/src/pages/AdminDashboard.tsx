@@ -356,16 +356,26 @@ function ExpandedDetail({
               👕 {m.tshirtSize}{m.tshirtSizeCustom ? ` (${m.tshirtSizeCustom})` : ''}
             </p>
             {m.schoolName && <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>🏫 {m.schoolName}</p>}
-            {m.proofFileKey && (
-              <button
-                className="btn btn-secondary btn-sm"
-                style={{ marginTop: '0.5rem' }}
-                onClick={() => onGetProofUrl(regId, m.proofFileKey!)}
-                id={`view-proof-${m.id}`}
-              >
-                <ExternalLinkIcon size={12} /> View Proof
-              </button>
-            )}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              {m.proofFileKey && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onGetProofUrl(regId, m.proofFileKey!)}
+                  id={`view-proof-${m.id}`}
+                >
+                  <ExternalLinkIcon size={12} /> View Proof
+                </button>
+              )}
+              {m.cvFileKey && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onGetProofUrl(regId, m.cvFileKey!)}
+                  id={`view-cv-${m.id}`}
+                >
+                  <ExternalLinkIcon size={12} /> View CV
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

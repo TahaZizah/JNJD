@@ -59,6 +59,7 @@ public class RegistrationService {
                 .tshirtSizeCustom(mr.getTshirtSizeCustom())
                 .schoolName(mr.getSchoolName())
                 .proofFileKey(mr.getProofFileKey())
+                .cvFileKey(mr.getCvFileKey())
                 .build();
             members.add(member);
         }
@@ -138,6 +139,7 @@ public class RegistrationService {
                 .tshirtSizeCustom(m.getTshirtSizeCustom())
                 .schoolName(m.getSchoolName())
                 .proofFileKey(m.getProofFileKey())
+                .cvFileKey(m.getCvFileKey())
                 .build())
             .toList();
 

@@ -35,6 +35,7 @@ public class RegistrationDetailResponse {
         private String tshirtSizeCustom;
         private String schoolName;
         private String proofFileKey;
+        private String cvFileKey;
     }
 
     @Data

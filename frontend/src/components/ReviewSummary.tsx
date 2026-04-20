@@ -4,25 +4,21 @@ interface Props {
   values: RegistrationFormValues
 }
 
-const ROLE_LABELS = ['Team Captain', 'Second Member', 'Third Member']
-const ROLE_COLORS = ['var(--amber-400)', 'var(--indigo-400)', 'var(--emerald-400)']
+const ROLE_LABELS  = ['Team Captain', 'Second Member', 'Third Member']
+const ROLE_COLORS  = ['var(--amber-400)', 'var(--indigo-400)', 'var(--emerald-400)']
 
 export default function ReviewSummary({ values }: Props) {
   return (
     <div>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-        Review Your Registration
-      </h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-        Please review all details carefully before submitting.
-      </p>
-
       {/* Team summary */}
       <div style={{
         background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-lg)', padding: '1.25rem', marginBottom: '1rem',
       }}>
-        <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.75rem' }}>
+        <p style={{
+          fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)',
+          textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.75rem',
+        }}>
           Team Details
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -31,7 +27,7 @@ export default function ReviewSummary({ values }: Props) {
             <p style={{ fontWeight: 700, fontSize: '1.05rem' }}>{values.teamName}</p>
           </div>
           <div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>Type</p>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>Status</p>
             <span className={`badge ${values.isOfficial ? 'badge-official' : 'badge-unofficial'}`}>
               {values.isOfficial ? '🏅 Official' : 'Unofficial'}
             </span>
@@ -57,12 +53,13 @@ export default function ReviewSummary({ values }: Props) {
               <p style={{ fontWeight: 700, fontSize: '0.85rem', color: ROLE_COLORS[i] }}>{ROLE_LABELS[i]}</p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem 1.5rem', fontSize: '0.85rem' }}>
-              <ReviewRow label="Full Name" value={m.fullName} />
-              <ReviewRow label="Email" value={m.email} />
-              <ReviewRow label="Phone" value={m.phone} />
-              <ReviewRow label="T-Shirt" value={m.tshirtSize === 'OTHER' ? `Other: ${m.tshirtSizeCustom}` : m.tshirtSize} />
-              {m.schoolName && <ReviewRow label="School" value={m.schoolName} />}
-              {m.proofFileKey && <ReviewRow label="Proof" value="✅ Uploaded" />}
+              <ReviewRow label="Full Name"   value={m.fullName} />
+              <ReviewRow label="Email"       value={m.email} />
+              <ReviewRow label="Phone"       value={m.phone} />
+              <ReviewRow label="T-Shirt"     value={m.tshirtSize === 'OTHER' ? `Other: ${m.tshirtSizeCustom}` : m.tshirtSize} />
+              {m.schoolName   && <ReviewRow label="University"       value={m.schoolName} />}
+              {m.proofFileKey && <ReviewRow label="Enrollment Proof" value="✅ Uploaded" />}
+              {m.cvFileKey    && <ReviewRow label="CV / Résumé"      value="✅ Uploaded" />}
             </div>
           </div>
         ))}
@@ -75,7 +72,12 @@ function ReviewRow({ label, value }: { label: string; value: string | undefined 
   if (!value) return null
   return (
     <div>
-      <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.15rem' }}>{label}</p>
+      <p style={{
+        fontSize: '0.72rem', color: 'var(--text-muted)',
+        textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.15rem',
+      }}>
+        {label}
+      </p>
       <p style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{value}</p>
     </div>
   )

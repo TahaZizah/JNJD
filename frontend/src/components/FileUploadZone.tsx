@@ -1,25 +1,48 @@
 import { useState, useRef } from 'react'
-import { UploadIcon, CheckCircleIcon, XCircleIcon, FileIcon } from 'lucide-react'
+import { UploadIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react'
 import { getPresignedUrl, uploadFileToMinIO } from '../api/registration'
-import { validateFileForUpload } from '../schemas/registration'
+import { validateFileForUpload, CV_EXTENSIONS } from '../schemas/registration'
 
 interface Props {
+  /** Unique DOM id prefix for the hidden file input */
+  uploadId: string
   memberIndex: number
   memberName: string
   value?: string
   onChange: (key: string) => void
   onError: (msg: string) => void
+  /** File types accepted by the native input (e.g. ".pdf,.png,.jpg,.jpeg") */
+  accept?: string
+  /** Human-readable format hint shown in idle state */
+  acceptLabel?: string
+  /** Placeholder text shown in idle state */
+  placeholder?: string
 }
 
-export default function FileUploadZone({ memberIndex, memberName, value, onChange, onError }: Props) {
+const DEFAULT_ACCEPT       = '.pdf,.png,.jpg,.jpeg'
+const DEFAULT_ACCEPT_LABEL = 'PDF, PNG, JPG, JPEG — max 5 MB'
+const DEFAULT_PLACEHOLDER  = 'Click to upload or drag & drop'
+
+export default function FileUploadZone({
+  uploadId,
+  memberIndex,
+  memberName,
+  value,
+  onChange,
+  onError,
+  accept       = DEFAULT_ACCEPT,
+  acceptLabel  = DEFAULT_ACCEPT_LABEL,
+  placeholder  = DEFAULT_PLACEHOLDER,
+}: Props) {
   const [progress, setProgress] = useState(0)
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle')
+  const [status, setStatus]     = useState<'idle' | 'uploading' | 'done' | 'error'>('idle')
   const [fileName, setFileName] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef                = useRef<HTMLInputElement>(null)
 
   const handleFile = async (file: File) => {
-    const validationError = validateFileForUpload(file)
+    const isCv = accept.includes('.doc')
+    const validationError = validateFileForUpload(file, isCv ? CV_EXTENSIONS : undefined)
     if (validationError) {
       setStatus('error')
       setErrorMsg(validationError)
@@ -77,17 +100,15 @@ export default function FileUploadZone({ memberIndex, memberName, value, onChang
             <input
               ref={inputRef}
               type="file"
-              accept=".pdf,.png,.jpg,.jpeg"
+              accept={accept}
               onChange={handleChange}
-              id={`proof-upload-${memberIndex}`}
+              id={`${uploadId}-input`}
             />
             <UploadIcon size={24} style={{ color: 'var(--indigo-400)', margin: '0 auto 0.5rem' }} />
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-              <strong style={{ color: 'var(--indigo-400)' }}>Click to upload</strong> or drag & drop
+              <strong style={{ color: 'var(--indigo-400)' }}>{placeholder}</strong>
             </p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              PDF, PNG, JPG, JPEG — max 5 MB
-            </p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{acceptLabel}</p>
           </>
         )}
 
@@ -128,9 +149,9 @@ export default function FileUploadZone({ memberIndex, memberName, value, onChang
             <input
               ref={inputRef}
               type="file"
-              accept=".pdf,.png,.jpg,.jpeg"
+              accept={accept}
               onChange={handleChange}
-              id={`proof-upload-retry-${memberIndex}`}
+              id={`${uploadId}-retry`}
             />
             <XCircleIcon size={20} style={{ color: 'var(--rose-400)', margin: '0 auto 0.5rem' }} />
             <p style={{ fontSize: '0.85rem', color: 'var(--rose-400)', marginBottom: '0.25rem' }}>

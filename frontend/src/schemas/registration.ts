@@ -21,6 +21,7 @@ export const memberSchema = z.object({
   tshirtSizeCustom: z.string().max(50).optional(),
   schoolName: z.string().max(255).optional(),
   proofFileKey: z.string().optional(),
+  cvFileKey: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.tshirtSize === 'OTHER' && !data.tshirtSizeCustom?.trim()) {
     ctx.addIssue({
@@ -68,12 +69,22 @@ export const officialRegistrationSchema = z.object({
 export type MemberFormValues = z.infer<typeof memberSchema>
 export type RegistrationFormValues = z.infer<typeof registrationSchema>
 
-export function validateFileForUpload(file: File): string | null {
-  if (!ALLOWED_EXTENSIONS.test(file.name)) {
-    return 'Only PDF, PNG, JPG, and JPEG files are allowed'
+const CV_EXTENSIONS = /\.(pdf|doc|docx)$/i
+
+export function validateFileForUpload(
+  file: File,
+  allowedExtensions: RegExp = ALLOWED_EXTENSIONS,
+): string | null {
+  if (!allowedExtensions.test(file.name)) {
+    const isCV = allowedExtensions === CV_EXTENSIONS
+    return isCV
+      ? 'Only PDF, DOC, and DOCX files are allowed'
+      : 'Only PDF, PNG, JPG, and JPEG files are allowed'
   }
   if (file.size > 5 * 1024 * 1024) {
     return 'File size must not exceed 5 MB'
   }
   return null
 }
+
+export { CV_EXTENSIONS }

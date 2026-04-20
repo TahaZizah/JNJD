@@ -33,6 +33,8 @@ export default function AdminLoginPage() {
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
       justifyContent: 'center', padding: '2rem 1rem',
+      background: 'var(--bg-base)',
+      backgroundImage: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%)',
     }}>
       <div style={{ maxWidth: 420, width: '100%' }}>
 
@@ -40,12 +42,13 @@ export default function AdminLoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
             width: 64, height: 64, borderRadius: 'var(--radius-lg)',
-            background: 'var(--gradient-brand)',
+            background: 'rgba(200,168,75,0.1)',
+            border: '1px solid rgba(200,168,75,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 1rem',
-            boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
+            boxShadow: '0 8px 32px rgba(200,168,75,0.2)',
           }}>
-            <TrophyIcon size={28} style={{ color: 'white' }} />
+            <TrophyIcon size={28} style={{ color: 'var(--gold)' }} />
           </div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem' }}>
             Admin Portal
@@ -109,7 +112,7 @@ export default function AdminLoginPage() {
 
             <button
               type="submit"
-              className="btn btn-primary w-full btn-lg"
+              className="btn btn-primary btn-lg"
               disabled={mutation.isPending || !username || !password}
               id="admin-login-btn"
               style={{ width: '100%' }}

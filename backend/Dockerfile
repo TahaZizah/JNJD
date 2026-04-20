@@ -1,15 +1,15 @@
-# ── Build stage ────────────────────────────────────────────
-FROM eclipse-temurin:17-jdk AS builder
+# ── Build stage ────────────────────────────────────────────────
+FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
 
-# Install Maven
-RUN apt-get update && apt-get install -y --no-install-recommends maven \
-    && rm -rf /var/lib/apt/lists/*
+# Cache dependencies separately from source
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+
+COPY src ./src
 RUN mvn package -DskipTests -q
 
-# ── Runtime stage ───────────────────────────────────────────
+# ── Runtime stage ──────────────────────────────────────────────
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 

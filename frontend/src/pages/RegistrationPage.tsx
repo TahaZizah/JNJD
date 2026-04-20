@@ -1,332 +1,292 @@
-import { useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
-import { ChevronRightIcon, ChevronLeftIcon, SendIcon, AlertCircleIcon } from 'lucide-react'
-
-import { registrationSchema, officialRegistrationSchema } from '../schemas/registration'
-import type { RegistrationFormValues } from '../schemas/registration'
-import { submitRegistration } from '../api/registration'
-import StepIndicator from '../components/StepIndicator'
-import MemberFieldGroup from '../components/MemberFieldGroup'
-import FileUploadZone from '../components/FileUploadZone'
-import { FormInput } from '../components/FormFields'
-import ReviewSummary from '../components/ReviewSummary'
-
-const STEPS = [
-  { number: 1, label: 'Team & Members' },
-  { number: 2, label: 'Official Proof' },
-  { number: 3, label: 'Review' },
-]
-
-const DEFAULT_MEMBER = {
-  fullName: '', email: '', phone: '',
-  tshirtSize: '' as any, tshirtSizeCustom: '',
-  schoolName: '', proofFileKey: '',
-}
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, ShieldAlert, Cpu, Trophy, ChevronDown, Menu, X } from "lucide-react";
+import RegistrationWizard from "../components/RegistrationWizard";
 
 export default function RegistrationPage() {
-  const navigate = useNavigate()
-  const [step, setStep] = useState(1)
-  const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({})
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const methods = useForm<RegistrationFormValues>({
-    resolver: zodResolver(registrationSchema),
-    defaultValues: {
-      teamName: '',
-      isOfficial: false,
-      description: '',
-      members: [{ ...DEFAULT_MEMBER }, { ...DEFAULT_MEMBER }, { ...DEFAULT_MEMBER }],
-    },
-    mode: 'onBlur',
-  })
+  useEffect(() => {
+    // Note: Update this target date as needed
+    const target = new Date("2026-05-16T09:00:00").getTime();
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = target - now;
+      if (distance < 0) { clearInterval(interval); return; }
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const { watch, handleSubmit, setValue, trigger, formState: { errors } } = methods
-  const isOfficial = watch('isOfficial')
-  const members = watch('members')
-
-  const mutation = useMutation({
-    mutationFn: submitRegistration,
-    onSuccess: (data) => navigate(`/confirmation/${data.id}`),
-  })
-
-  const handleNext = async () => {
-    let valid = false
-    if (step === 1) {
-      valid = await trigger(['teamName', 'members'])
-    } else if (step === 2) {
-      // Check all proofFileKeys filled
-      const missingProof = members.some((m) => !m.proofFileKey)
-      if (missingProof) {
-        setUploadErrors(prev => ({ ...prev, _form: '1' }))
-        return
-      }
-      valid = true
-    }
-    if (valid) setStep((s) => s + 1)
-  }
-
-  const handleBack = () => setStep((s) => s - 1)
-
-  const onSubmit = (data: RegistrationFormValues) => {
-    mutation.mutate(data as any)
-  }
-
-  const effectiveSteps = isOfficial ? STEPS : STEPS.filter(s => s.number !== 2).map((s, i) => ({ ...s, number: i + 1 }))
-  const displayStep = isOfficial ? step : step === 3 ? 2 : step
-
-  const getApiError = () => {
-    const err = mutation.error as any
-    if (!err) return null
-    const details = err?.response?.data?.details
-    if (Array.isArray(details)) return details.map((d: any) => d.message).join(', ')
-    return err?.response?.data?.error || 'Submission failed. Please try again.'
-  }
+  const scrollToSection = (id: string) => {
+    setMenuOpen(false);
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  };
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem 1rem 4rem' }}>
-      {/* ── Hero Header ─────────────────────────────────────── */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
-          borderRadius: '100px', padding: '0.35rem 1rem', marginBottom: '1.25rem',
-          fontSize: '0.78rem', fontWeight: 700, color: 'var(--indigo-400)',
-          textTransform: 'uppercase', letterSpacing: '1px',
-        }}>
-          🏆 19th Edition
+    <main className="min-h-screen relative overflow-x-hidden text-[#eeeae0]">
+
+      {/* ── NAVBAR ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-12 bg-[#020611]/85 backdrop-blur-xl border-b border-[#c8a84b]/15">
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <img src="/assets/Logo BW 2.png" alt="JNJD" width={34} height={34} className="opacity-90 flex-shrink-0" />
+          <div className="flex flex-col leading-none">
+            <span className="font-outfit font-extrabold text-[#c8a84b] text-base tracking-tight leading-none">JNJD</span>
+            <span className="text-[9px] font-semibold text-[#6284b3] tracking-wider uppercase leading-none mt-0.5 hidden xs:block">19th Edition</span>
+          </div>
+          <span className="w-px h-6 bg-[#1c4481] mx-1 hidden md:block" />
+          <span className="text-[10px] font-semibold text-[#6284b3] tracking-widest hidden md:block">
+            Journées Nationales des Jeunes Développeurs
+          </span>
         </div>
-        <h1 style={{
-          fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-          fontWeight: 900, lineHeight: 1.1, marginBottom: '0.75rem',
-          background: 'linear-gradient(135deg, #f1f5f9 0%, #818cf8 60%, #8b5cf6 100%)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}>
-          JNJD Registration
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: 520, margin: '0 auto' }}>
-          Journées Nationales de Jeux Développés — Register your team of 3 to compete.
-        </p>
-      </div>
 
-      {/* ── Form Card ────────────────────────────────────────── */}
-      <div className="container" style={{ maxWidth: 760 }}>
-        <div className="glass" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-          <StepIndicator
-            steps={isOfficial ? STEPS : [
-              { number: 1, label: 'Team & Members' },
-              { number: 2, label: 'Review' },
-            ]}
-            current={isOfficial ? step : (step === 3 ? 2 : step === 2 ? 2 : 1)}
-          />
+        {/* Desktop nav links */}
+        <div className="hidden sm:flex items-center gap-6">
+          <a href="/sponsoring" className="text-sm font-semibold text-[#6284b3] hover:text-[#c8a84b] transition-colors">Sponsoring</a>
+          <button onClick={() => scrollToSection("rules")} className="text-sm font-semibold text-[#6284b3] hover:text-[#c8a84b] transition-colors">Rules</button>
+          <button
+            onClick={() => scrollToSection("register")}
+            className="text-xs font-outfit font-bold uppercase tracking-wider px-4 py-2 border border-[#c8a84b] text-[#c8a84b] rounded hover:bg-[#c8a84b] hover:text-[#020611] transition-colors"
+          >
+            Register
+          </button>
+        </div>
 
-          <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="sm:hidden w-10 h-10 flex items-center justify-center text-[#6284b3] hover:text-[#c8a84b] transition-colors"
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </nav>
 
-              {/* ── Step 1: Team Info + Members ──────────────── */}
-              {step === 1 && (
-                <div className="animate-fade-in-scale">
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-                    Team Information
-                  </h2>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-                    Enter your team details and all 3 member profiles below.
-                  </p>
+      {/* Mobile dropdown menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-16 left-0 right-0 z-40 bg-[#020611]/97 backdrop-blur-xl border-b border-[#c8a84b]/15 px-6 py-6 flex flex-col gap-4 sm:hidden"
+          >
+            <a
+              href="/sponsoring"
+              className="text-base font-semibold text-[#6284b3] hover:text-[#c8a84b] transition-colors text-left py-2"
+            >
+              Sponsoring
+            </a>
+            <button
+              onClick={() => scrollToSection("rules")}
+              className="text-base font-semibold text-[#6284b3] hover:text-[#c8a84b] transition-colors text-left py-2"
+            >
+              Rules & Guidelines
+            </button>
+            <button
+              onClick={() => scrollToSection("countdown")}
+              className="text-base font-semibold text-[#6284b3] hover:text-[#c8a84b] transition-colors text-left py-2"
+            >
+              Countdown
+            </button>
+            <button
+              onClick={() => scrollToSection("register")}
+              className="btn-primary justify-center mt-2"
+            >
+              Register Your Team
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    <FormInput
-                      name="teamName"
-                      control={methods.control as any}
-                      label="Team Name"
-                      placeholder="e.g. CodeCraft"
-                      required
-                      className="col-span-2"
-                    />
-                  </div>
+      {/* ── HERO ── */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-20 px-5 text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_30%,rgba(200,168,75,0.08)_0%,transparent_60%)] -z-10" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+CjxwYXRoIGQ9Ik00OCAwaC0xdjQ4aDFWMHptLTQ3IDBoLTF2NDhoMVYweiIgZmlsbD0icmdiYSgyMDAsIDE2OCwgNzUsIDAuMDMpIi8+CjxwYXRoIGQ9Ik0wIDQ4di0xaDQ4djFIMHptMC00N3YtMWg0OHYxSDB6IiBmaWxsPSJyZ2JhKDIwMCwgMTY4LCA3NSwgMC4wMykiLz4KPC9zdmc+')] [mask-image:radial-gradient(ellipse_90%_60%_at_50%_30%,black_0%,transparent_80%)] -z-20" />
 
-                  <div className="field" style={{ marginBottom: '1rem' }}>
-                    <label className="field-label">Description <span style={{ color: 'var(--text-muted)', fontWeight: 400, textTransform: 'none', fontSize: '0.78rem' }}>(optional)</span></label>
-                    <textarea
-                      {...methods.register('description')}
-                      placeholder="Brief description of your game concept..."
-                      className="textarea"
-                      rows={3}
-                    />
-                  </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto w-full"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#c8a84b]/25 bg-[#c8a84b]/5 text-xs font-bold text-[#c8a84b] uppercase tracking-widest mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c8a84b] animate-pulse" />
+            Registrations Open
+          </div>
 
-                  {/* Official toggle */}
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '1rem',
-                    padding: '1rem 1.25rem',
-                    background: isOfficial ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isOfficial ? 'rgba(99,102,241,0.3)' : 'var(--border-subtle)'}`,
-                    borderRadius: 'var(--radius-md)', marginBottom: '2rem',
-                    transition: 'all 0.25s ease',
-                  }}>
-                    <label className="toggle" style={{ margin: 0 }}>
-                      <input
-                        type="checkbox"
-                        checked={isOfficial}
-                        onChange={(e) => setValue('isOfficial', e.target.checked)}
-                        id="is-official-toggle"
-                      />
-                      <div className="toggle-track" />
-                      <div className="toggle-thumb" />
-                    </label>
-                    <div>
-                      <p style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.15rem' }}>
-                        Official Team {isOfficial && <span className="badge badge-official" style={{ verticalAlign: 'middle', marginLeft: '0.5rem' }}>Official</span>}
-                      </p>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        All 3 members must provide school name + enrollment proof (PDF/image)
-                      </p>
-                    </div>
-                  </div>
+          <h1 className="font-outfit text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9] mb-6">
+            <span className="text-[#c8a84b] drop-shadow-[0_0_30px_rgba(200,168,75,0.3)]">JNJD</span><br />
+            <span>19TH EDITION</span>
+          </h1>
 
-                  {/* Member cards */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                    {[0, 1, 2].map((i) => (
-                      <MemberFieldGroup key={i} index={i} isOfficial={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
+          <p className="text-base sm:text-lg md:text-xl text-[#6284b3] mb-4 max-w-2xl mx-auto leading-relaxed">
+            Journées Nationales des Jeunes Développeurs<br />
+            Institut National des Postes et Télécommunications
+          </p>
 
-              {/* ── Step 2: Official Proof Upload ────────────── */}
-              {step === 2 && isOfficial && (
-                <div className="animate-fade-in-scale">
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-                    Enrollment Proof
-                  </h2>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-                    Upload proof of enrollment for each team member (PDF, PNG, JPG — max 5 MB).
-                  </p>
+          <p className="font-outfit text-[#c8a84b] font-semibold tracking-wide mb-10 sm:mb-12 opacity-90">
+            May 16th, 2026 &bull; INPT, Rabat
+          </p>
 
-                  {Object.keys(uploadErrors).includes('_form') && (
-                    <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>
-                      <AlertCircleIcon size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-                      All 3 members must upload their proof of enrollment before proceeding.
-                    </div>
-                  )}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <button onClick={() => scrollToSection("register")} className="btn-primary w-full sm:w-auto justify-center">
+              Register Team <ChevronDown className="w-5 h-5 ml-1" />
+            </button>
+            <button onClick={() => scrollToSection("rules")} className="btn-outline w-full sm:w-auto justify-center">
+              View Rules
+            </button>
+          </div>
+        </motion.div>
 
-                  {[0, 1, 2].map((i) => {
-                    const member = members[i]
-                    const roleLabels = ['Team Captain', 'Second Member', 'Third Member']
-                    const roleColors = ['var(--amber-400)', 'var(--indigo-400)', 'var(--emerald-400)']
-                    return (
-                      <div key={i} style={{
-                        background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)',
-                        borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '1rem',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                          <div style={{
-                            width: 8, height: 8, borderRadius: '50%',
-                            background: roleColors[i], flexShrink: 0,
-                          }} />
-                          <div>
-                            <p style={{ fontWeight: 700, fontSize: '0.9rem' }}>{roleLabels[i]}</p>
-                            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                              {member.fullName || `Member ${i + 1}`}
-                            </p>
-                          </div>
-                        </div>
+        <motion.button
+          onClick={() => scrollToSection("countdown")}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          className="absolute bottom-8 text-[#6284b3] hover:text-[#c8a84b] transition-colors flex flex-col items-center gap-2"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Scroll</span>
+          <ChevronDown className="w-4 h-4" />
+        </motion.button>
+      </section>
 
-                        <div className="field" style={{ marginBottom: '1rem' }}>
-                          <label className="field-label">
-                            School / University <span className="required">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="INPT Rabat"
-                            className="input"
-                            value={member.schoolName ?? ''}
-                            onChange={(e) => setValue(`members.${i}.schoolName` as any, e.target.value)}
-                            id={`school-name-${i}`}
-                          />
-                        </div>
-
-                        <div className="field">
-                          <label className="field-label">
-                            Proof of Enrollment <span className="required">*</span>
-                          </label>
-                          <FileUploadZone
-                            memberIndex={i}
-                            memberName={member.fullName || `Member ${i + 1}`}
-                            value={member.proofFileKey}
-                            onChange={(key) => {
-                              setValue(`members.${i}.proofFileKey` as any, key)
-                              setUploadErrors(prev => {
-                                const next = { ...prev }
-                                delete (next as any)._form
-                                return next
-                              })
-                            }}
-                            onError={(msg) => setUploadErrors(prev => ({ ...prev, [i]: msg }))}
-                          />
-                          {uploadErrors[i] && (
-                            <span className="field-error">{uploadErrors[i]}</span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* ── Step 3 (or 2 for unofficial): Review ─────── */}
-              {(step === 3 || (step === 2 && !isOfficial)) && (
-                <div className="animate-fade-in-scale">
-                  <ReviewSummary values={methods.getValues()} />
-                  {getApiError() && (
-                    <div className="alert alert-error" style={{ marginTop: '1.25rem' }}>
-                      <AlertCircleIcon size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-                      {getApiError()}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── Navigation Buttons ───────────────────────── */}
-              <div style={{
-                display: 'flex', justifyContent: 'space-between',
-                marginTop: '2rem', gap: '1rem',
-              }}>
-                {step > 1 ? (
-                  <button type="button" className="btn btn-ghost" onClick={handleBack}>
-                    <ChevronLeftIcon size={16} /> Back
-                  </button>
-                ) : <div />}
-
-                {(step === 3 || (step === 2 && !isOfficial)) ? (
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-lg"
-                    disabled={mutation.isPending}
-                    id="submit-registration"
-                  >
-                    {mutation.isPending ? (
-                      <><div className="spinner" style={{ width: 16, height: 16 }} /> Submitting…</>
-                    ) : (
-                      <><SendIcon size={16} /> Submit Registration</>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-lg"
-                    onClick={handleNext}
-                    id={`next-step-${step}`}
-                  >
-                    Continue <ChevronRightIcon size={16} />
-                  </button>
+      {/* ── COUNTDOWN ── */}
+      <section id="countdown" className="border-y border-[#c8a84b]/15 bg-[#061224] py-14 px-5">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#6284b3] mb-8">Time until kickoff — May 16th, 2026</p>
+          <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-12">
+            {[
+              { label: "Days", value: timeLeft.days },
+              { label: "Hours", value: timeLeft.hours },
+              { label: "Mins", value: timeLeft.minutes },
+              { label: "Secs", value: timeLeft.seconds },
+            ].map((unit, i) => (
+              <div key={unit.label} className="relative text-center w-16 sm:w-20 md:w-24">
+                <span className="block font-outfit text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#c8a84b] leading-none mb-2 tabular-nums">
+                  {unit.value.toString().padStart(2, "0")}
+                </span>
+                <span className="text-[9px] sm:text-[10px] md:text-xs font-semibold text-[#6284b3] uppercase tracking-widest">{unit.label}</span>
+                {i < 3 && (
+                  <span className="absolute -right-2 sm:-right-4 md:-right-8 top-0 text-2xl sm:text-3xl md:text-4xl text-[#1c4481] font-outfit font-bold leading-tight">
+                    :
+                  </span>
                 )}
               </div>
-            </form>
-          </FormProvider>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
-  )
+      </section>
+
+      {/* ── RULES ── */}
+      <section id="rules" className="py-20 sm:py-24 px-5 max-w-6xl mx-auto">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="font-outfit text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+            Rules & <span className="text-[#c8a84b]">Guidelines</span>
+          </h2>
+          <p className="text-[#6284b3] max-w-2xl mx-auto text-sm sm:text-base">Please read carefully before registering your team.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 sm:mb-12">
+          {[
+            { icon: <Users className="w-6 h-6" />, title: "3 Members Required", desc: "Exactly 3 members per team — no more, no less. Incomplete teams will not be accepted." },
+            { icon: <Trophy className="w-6 h-6" />, title: "Official Teams", desc: "All 3 members must be from Moroccan schools. Only official teams are eligible for prizes." },
+            { icon: <Cpu className="w-6 h-6" />, title: "Unofficial Teams", desc: "Have out-of-Morocco members or 3-time consecutive winners. Participate and have fun!" },
+            { icon: <ShieldAlert className="w-6 h-6" />, title: "Qualification Phase", desc: "Registration is not a guarantee. A qualification round may occur based on volume." },
+          ].map((rule, i) => (
+            <motion.div
+              key={rule.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="glass-panel p-6 sm:p-8 rounded-xl hover:border-[#c8a84b]/40 hover:-translate-y-1 transition-all group"
+            >
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-[#c8a84b]/10 border border-[#c8a84b]/20 flex items-center justify-center text-[#c8a84b] mb-5 group-hover:scale-110 transition-transform">
+                {rule.icon}
+              </div>
+              <h3 className="font-outfit text-lg sm:text-xl font-bold mb-2 sm:mb-3">{rule.title}</h3>
+              <p className="text-sm text-[#6284b3] leading-relaxed">{rule.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Fee Banner */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 p-6 sm:p-8 rounded-xl border-l-4 border-l-[#c8a84b] border border-[#1c4481] bg-gradient-to-br from-[#c8a84b]/5 to-transparent"
+        >
+          <div className="flex-shrink-0 font-outfit text-4xl sm:text-5xl font-extrabold text-[#c8a84b] text-center sm:text-left">
+            180 <span className="text-xl text-[#6284b3]">MAD</span>
+          </div>
+          <div className="text-center sm:text-left">
+            <h4 className="font-bold text-lg mb-1">Participation Fee Per Team</h4>
+            <p className="text-sm text-[#6284b3]">
+              Payment confirms participation. Instructions sent after registration.{" "}
+              <a href="mailto:cit.inpt@gmail.com" className="text-[#c8a84b] hover:underline">cit.inpt@gmail.com</a>
+            </p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── REGISTRATION ── */}
+      <section id="register" className="py-20 sm:py-24 px-5 bg-[#061224] border-t border-[#1c4481]">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="font-outfit text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+              Register Your <span className="text-[#c8a84b]">Team</span>
+            </h2>
+            <p className="text-[#6284b3] text-sm sm:text-base">Secure your spot in the 19th edition of JNJD.</p>
+          </div>
+          <RegistrationWizard />
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-[#1c4481] bg-[#020611] pt-10 pb-8 px-5">
+        <div className="max-w-6xl mx-auto">
+          {/* Top row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-[#08172d]">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <img src="/assets/Logo BW 2.png" alt="JNJD" width={32} height={32} className="opacity-80" />
+              <div className="flex flex-col">
+                <span className="font-outfit font-extrabold text-[#c8a84b] text-sm tracking-tight leading-none">JNJD 2026</span>
+                <span className="text-[9px] text-[#6284b3] tracking-widest uppercase mt-0.5">19th Edition</span>
+              </div>
+            </div>
+
+            {/* Nav links */}
+            <div className="flex items-center gap-5 text-xs font-semibold text-[#6284b3]">
+              <a href="/sponsoring" className="hover:text-[#c8a84b] transition-colors py-1">Sponsoring</a>
+              <a href="#rules" className="hover:text-[#c8a84b] transition-colors py-1">Rules</a>
+              <a href="#register" className="hover:text-[#c8a84b] transition-colors py-1">Register</a>
+              <a href="mailto:cit.inpt@gmail.com" className="hover:text-[#c8a84b] transition-colors py-1">Contact</a>
+            </div>
+
+            {/* CIT Logo */}
+            <img src="/assets/Cit-Hor.png" alt="Club Informatique & Télécom" width={110} height={36} className="opacity-75" />
+          </div>
+
+          {/* Bottom row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6">
+            <p className="text-[10px] text-[#183c74] text-center sm:text-left">
+              © {new Date().getFullYear()} Club Informatique &amp; Télécom — INPT Rabat
+            </p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
 }
