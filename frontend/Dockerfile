@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install deps first (layer-cached unless lockfile changes)
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source and build
 COPY . .
