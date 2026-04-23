@@ -1,16 +1,19 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import RegistrationPage from './pages/RegistrationPage'
+import Landing from './pages/Landing'
 import ConfirmationPage from './pages/ConfirmationPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboard from './pages/AdminDashboard'
 import SponsoringPage from './pages/SponsoringPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import PublicLayout from './ui/PublicLayout'
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<RegistrationPage />} />
-      <Route path="/sponsoring" element={<SponsoringPage />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/sponsoring" element={<SponsoringPage />} />
+      </Route>
       <Route path="/confirmation/:id" element={<ConfirmationPage />} />
       <Route path="/admin" element={<AdminLoginPage />} />
       <Route
