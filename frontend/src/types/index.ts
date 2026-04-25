@@ -63,10 +63,11 @@ export interface PresignResponse {
 
 export interface PageResponse<T> {
   content: T[]
-  totalElements: number
-  totalPages: number
-  number: number
-  size: number
+  total: number
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
 }
 
 export interface ApiError {

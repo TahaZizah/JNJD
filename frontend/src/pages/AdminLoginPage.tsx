@@ -30,36 +30,38 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', padding: '2rem 1rem',
-      background: 'var(--bg-base)',
-      backgroundImage: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%)',
+    <div className="admin-layout" style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '2rem 1rem',
     }}>
-      <div style={{ maxWidth: 420, width: '100%' }}>
+      {/* Decorative orbits */}
+      <div className="admin-orbit-1" />
+      <div className="admin-orbit-2" />
+
+      <div style={{ maxWidth: 420, width: '100%', position: 'relative', zIndex: 1 }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
-            width: 64, height: 64, borderRadius: 'var(--radius-lg)',
-            background: 'rgba(200,168,75,0.1)',
-            border: '1px solid rgba(200,168,75,0.3)',
+            width: 64, height: 64, borderRadius: 16,
+            background: 'linear-gradient(180deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.04) 100%)',
+            border: '1px solid rgba(201,168,76,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 1rem',
-            boxShadow: '0 8px 32px rgba(200,168,75,0.2)',
+            boxShadow: '0 8px 32px rgba(201,168,76,0.2)',
           }}>
-            <TrophyIcon size={28} style={{ color: 'var(--gold)' }} />
+            <TrophyIcon size={28} style={{ color: 'var(--text-gold)' }} />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem' }}>
+          <h1 className="t-display" style={{ fontSize: '1.75rem', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
             Admin Portal
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            JNJD 19th Edition — Registration Management
+          <p className="t-mono" style={{ fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-gold)' }}>
+            JNJD 19th Edition · Registration Management
           </p>
         </div>
 
         {/* Login card */}
-        <div className="glass" style={{ padding: '2rem' }}>
+        <div className="glass-gold" style={{ padding: '2rem', borderRadius: 20 }}>
           <form onSubmit={handleSubmit} noValidate>
             {getError() && (
               <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>
@@ -112,10 +114,10 @@ export default function AdminLoginPage() {
 
             <button
               type="submit"
-              className="btn btn-primary btn-lg"
+              className="btn-primary"
               disabled={mutation.isPending || !username || !password}
               id="admin-login-btn"
-              style={{ width: '100%' }}
+              style={{ width: '100%', justifyContent: 'center' }}
             >
               {mutation.isPending ? (
                 <><div className="spinner" style={{ width: 16, height: 16 }} /> Signing in…</>
