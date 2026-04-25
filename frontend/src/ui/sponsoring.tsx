@@ -4,6 +4,7 @@ import * as Icons from './icons';
 import { IconBrief, IconHandshake, IconMegaphone, IconTarget, IconUsers, IconMail, IconPhone, IconPin } from './icons';
 import { cn, Reveal, Magnetic } from './utils';
 import { AgenticField } from './background';
+import { SectionHeader } from './landing_rules';
 
 // Sponsoring pitch page
 
@@ -58,7 +59,7 @@ function SponsoringHero() {
         <div className="grid lg:grid-cols-12 gap-10 items-end">
           <div className="lg:col-span-8">
             <Reveal delay={80}>
-              <h1 className="t-display" style={{ fontSize: 'clamp(3rem, 8vw, 8.125rem)' }}>
+              <h1 className="t-display" style={{ fontSize: 'clamp(2.5rem, 8vw, 8.125rem)' }}>
                 <span className="block text-bone-100">Meet the engineers</span>
                 <span className="block">
                   <span className="gold-text">who will build</span>

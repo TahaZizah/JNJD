@@ -68,8 +68,8 @@ function Hero() {
         <div className="grid lg:grid-cols-12 gap-10 items-end">
           <div className="lg:col-span-8">
             <Reveal delay={80}>
-              {/* Fluid hero type: 3.5rem on mobile → 8.125rem on large desktop, never causes horizontal scroll */}
-              <h1 className="t-display" style={{ fontSize: 'clamp(3.5rem, 9vw, 8.125rem)' }}>
+              {/* Fluid hero type: 2.5rem on mobile → 8.125rem on large desktop, never causes horizontal scroll */}
+              <h1 className="t-display" style={{ fontSize: 'clamp(2.5rem, 8vw, 8.125rem)' }}>
                 <span className="block text-bone-100">JOURNÉES</span>
                 <span className="block text-bone-100/95">NATIONALES <span className="shimmer-text">des</span></span>
                 <span className="block">

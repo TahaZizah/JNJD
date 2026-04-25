@@ -94,7 +94,7 @@ function Nav({ route, setRoute }) {
       {/* Mobile slide-down menu */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden"
+          className="fixed inset-0 z-30 md:hidden"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         >
@@ -115,7 +115,7 @@ function Nav({ route, setRoute }) {
               <button
                 key={id}
                 onClick={() => { setRoute(id); setMobileOpen(false); }}
-                className="text-left t-mono text-sm tracking-[0.2em] uppercase py-3 px-2 text-bone-100/70 hover:text-gold-300 transition border-b border-mist-400/10 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/70 rounded"
+                className="text-left t-mono text-sm tracking-[0.2em] uppercase py-3 px-2 text-bone-100 opacity-70 hover:opacity-100 transition border-b border-mist-400/10 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/70 rounded"
               >
                 {label}
               </button>
@@ -131,7 +131,7 @@ function Nav({ route, setRoute }) {
           </div>
           <div className="mt-4 flex items-center gap-2 justify-center">
             <span className="w-1.5 h-1.5 rounded-full bg-gold-400 dot-live" aria-hidden="true" />
-            <span className="t-mono text-[10px] tracking-[0.25em] text-bone-100/60 uppercase">May 16 · INPT Rabat</span>
+            <span className="t-mono text-[10px] tracking-[0.25em] text-bone-100 opacity-60 uppercase">May 16 · INPT Rabat</span>
           </div>
         </div>
       </div>
