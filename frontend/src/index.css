@@ -9,34 +9,34 @@
    ============================================================ */
 
 @theme {
-  /* --- Navy scale (background) --- */
-  --color-ink-950: #020611;
-  --color-ink-900: #030816;
-  --color-ink-800: #07172e;
-  --color-ink-700: #0c1f3d;
-  --color-ink-600: #112b55;
-  --color-ink-500: #1a3a6e;
+  /* --- Ultras Bleu scale (background) --- */
+  --color-ink-950: #060810;   /* void */
+  --color-ink-900: #0d1428;   /* abyss */
+  --color-ink-800: #141e3c;   /* prussian */
+  --color-ink-700: #1e2e58;   /* devoto */
+  --color-ink-600: #2b4278;   /* ultras */
+  --color-ink-500: #4a6e9e;   /* theatre */
 
-  /* --- Gold scale (brand accent) --- */
-  --color-gold-50:  #fbf6e3;
-  --color-gold-100: #f4e9b8;
-  --color-gold-200: #ead789;
-  --color-gold-300: #e0c768;
-  --color-gold-400: #d4b558;
-  --color-gold-500: #c9a84c;
-  --color-gold-600: #a88938;
-  --color-gold-700: #7e6727;
+  /* --- Stone Gold scale (decorative accent) --- */
+  --color-gold-50:  #f5f0e0;
+  --color-gold-100: #ede4c4;
+  --color-gold-200: #dfd0a0;
+  --color-gold-300: #d4be88;
+  --color-gold-400: #cdc090;
+  --color-gold-500: #c8b87a;
+  --color-gold-600: #a89660;
+  --color-gold-700: #7a6c40;
 
-  /* --- Bone scale (text) --- */
-  --color-bone-50:  #f8f5ef;
-  --color-bone-100: #f4f0e8;
-  --color-bone-200: #e6dfcf;
-  --color-bone-300: #cfc5ad;
+  /* --- Parchment scale (text) --- */
+  --color-bone-50:  #f5f2ea;
+  --color-bone-100: #e8e2d0;
+  --color-bone-200: #c2d8ee;
+  --color-bone-300: #7baad4;
 
-  /* --- Mist scale (secondary text/borders) --- */
-  --color-mist-400: #8caede;
-  --color-mist-500: #6b8ebd;
-  --color-mist-600: #4f6d9b;
+  /* --- Frost scale (secondary text/borders) --- */
+  --color-mist-400: #7baad4;
+  --color-mist-500: #4a6e9e;
+  --color-mist-600: #2b4278;
 
   /* --- Fonts --- */
   --font-display: "Outfit", system-ui, sans-serif;
@@ -49,24 +49,54 @@
    Used inside component CSS classes below.
    ============================================================ */
 :root {
-  /* Semantic color aliases */
-  --background: #020611;
-  --foreground: #eeeae0;
-  --bg-1: #061224;
-  --bg-2: #0a1c38;
-  --bg-3: #112b55;
-  --gold: #c8a84b;
-  --gold-hi: #e2c16a;
-  --gold-lo: #6b5520;
-  --gold-faint: rgba(200, 168, 75, 0.09);
-  --muted: #6284b3;
-  --dim: #1c4481;
-  --border: rgba(200, 168, 75, 0.15);
+  /* ── BACKGROUNDS ─────────────────── */
+  --bg-void:       #060810;
+  --bg-abyss:      #0d1428;
+  --bg-prussian:   #141e3c;
+  --bg-devoto:     #1e2e58;
+  --bg-ultras:     #2b4278;
+
+  /* ── ACCENTS ─────────────────────── */
+  --accent-theatre: #4a6e9e;
+  --accent-frost:   #7baad4;
+  --accent-silver:  #c2d8ee;
+  --accent-viola:   #2a1e50;
+
+  /* ── TEXT ────────────────────────── */
+  --text-primary:   #e8e2d0;
+  --text-secondary: #c2d8ee;
+  --text-muted:     #7baad4;
+  --text-gold:      #c8b87a;
+
+  /* ── BORDERS ─────────────────────── */
+  --border-subtle:  rgba(123,170,212,0.12);
+  --border-strong:  rgba(123,170,212,0.28);
+  --border-gold:    rgba(200,184,122,0.35);
+
+  /* ── SEMANTIC ALIASES (component compatibility) ── */
+  --background: var(--bg-abyss);
+  --foreground: var(--text-primary);
+  --bg-1: var(--bg-void);
+  --bg-2: var(--bg-prussian);
+  --bg-3: var(--bg-devoto);
+  --gold: var(--text-gold);
+  --gold-hi: #d9ca9a;
+  --gold-lo: #7a6840;
+  --gold-faint: rgba(200,184,122,0.09);
+  --muted: var(--accent-theatre);
+  --dim: var(--bg-ultras);
+  --border: var(--border-subtle);
+
+  /* ── COMMON TOKEN MAP ────────────── */
+  --color-bg:      var(--bg-abyss);
+  --color-surface: var(--bg-prussian);
+  --color-primary: var(--accent-frost);
+  --color-text:    var(--text-primary);
+  --color-border:  var(--border-subtle);
 
   /* Layout */
   --radius: 6px;
   --container-max: 1400px;
-  /* Fluid padding — feels right on Mac, Windows 1080p, and 1440p */
   --container-padding: clamp(1.25rem, 5vw, 4rem);
   --navbar-height: 80px;
 
@@ -75,7 +105,7 @@
   --transition-slow: 400ms ease;
 
   /* Shadows */
-  --shadow-gold: 0 0 24px rgba(201, 168, 76, 0.3);
+  --shadow-gold: 0 0 24px rgba(200,184,122,0.25);
 }
 
 /* ============================================================
@@ -96,6 +126,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   max-width: 100vw;
+  /* Baroque crosshatch texture */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(123,170,212,0.025) 0px,
+      rgba(123,170,212,0.025) 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(123,170,212,0.025) 0px,
+      rgba(123,170,212,0.025) 1px,
+      transparent 1px,
+      transparent 40px
+    );
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -706,3 +752,51 @@ textarea {
   scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ============================================================
+   BAROQUE THEATRE PATTERNS
+   ============================================================ */
+
+/* Gold ornamental top border on cards */
+.card, [class*="card"] {
+  border-top: 1px solid var(--border-gold);
+  position: relative;
+}
+
+/* Gothic stamp frame — add class="stamp-frame" to hero / feature blocks */
+.stamp-frame {
+  outline: 2px solid var(--border-gold);
+  outline-offset: 6px;
+  box-shadow:
+    inset 0 0 40px rgba(6,8,16,0.6),
+    0 0 0 8px var(--bg-prussian),
+    0 0 0 10px rgba(200,184,122,0.15);
+}
+
+/* Baroque ornament dividers — <hr class="ornament"> */
+hr.ornament {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-gold) 20%,
+    var(--accent-frost) 50%,
+    var(--border-gold) 80%,
+    transparent
+  );
+  margin: 2rem 0;
+  position: relative;
+}
+hr.ornament::before {
+  content: "\2726";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-prussian);
+  padding: 0 10px;
+  color: var(--text-gold);
+  font-size: 12px;
+}
+
