@@ -58,7 +58,7 @@ function Hero() {
         {/* top strip */}
         <Reveal>
           <div className="flex items-center gap-4 mb-10">
-            <span className="t-mono text-[10px] tracking-[0.35em] text-gold-500 uppercase">// Edition XX</span>
+            <span className="t-mono text-[10px] tracking-[0.35em] text-gold-500 uppercase">// Edition 20</span>
             <span className="hr-gold flex-1 max-w-[180px]"></span>
             <span className="t-mono text-[10px] tracking-[0.3em] text-bone-100/50 uppercase">National · INPT · Rabat</span>
           </div>
@@ -70,11 +70,11 @@ function Hero() {
             <Reveal delay={80}>
               {/* Fluid hero type: 2.5rem on mobile → 8.125rem on large desktop, never causes horizontal scroll */}
               <h1 className="t-display" style={{ fontSize: 'clamp(2.5rem, 8vw, 8.125rem)' }}>
-                <span className="block text-bone-100">JOURNÉES</span>
-                <span className="block text-bone-100/95">NATIONALES <span className="shimmer-text">des</span></span>
+                <span className="block text-bone-100">JOURNÉE</span>
+                <span className="block text-bone-100/95">NATIONALE <span className="shimmer-text">des</span></span>
                 <span className="block">
                   <span className="gold-text">JEUNES</span>
-                  <span className="text-bone-100/90"> DÉV.</span>
+                  <span className="text-bone-100/90"> DÉVelopeurs</span>
                 </span>
               </h1>
             </Reveal>

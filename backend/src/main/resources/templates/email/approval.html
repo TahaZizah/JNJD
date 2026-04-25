@@ -1,82 +1,226 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JNJD Registration Approved</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #020611; color: #eeeae0; }
-        .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-        .card { background: linear-gradient(135deg, #07172e 0%, #030816 100%); border: 1px solid rgba(201,168,76,0.3); border-radius: 16px; overflow: hidden; }
-        .header { background: linear-gradient(135deg, #c8a84b 0%, #a68428 100%); padding: 40px 32px; text-align: center; }
-        .header-icon { font-size: 48px; margin-bottom: 16px; }
-        .header h1 { color: #020611; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-        .header p { color: rgba(2,6,17,0.85); font-size: 16px; margin-top: 8px; font-weight: 600; }
-        .body { padding: 40px 32px; }
-        .greeting { font-size: 18px; font-weight: 600; color: #f4f0e8; margin-bottom: 16px; }
-        .text { font-size: 15px; color: #8caede; line-height: 1.7; margin-bottom: 16px; }
-        .status-badge { display: inline-block; background: linear-gradient(135deg, #c8a84b, #a68428); color: #020611; font-size: 13px; font-weight: 800; letter-spacing: 1px; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; margin: 8px 0 24px 0; }
-        .info-box { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.15); border-radius: 12px; padding: 24px; margin: 24px 0; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(201,168,76,0.05); }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { font-size: 13px; color: #6284b3; text-transform: uppercase; letter-spacing: 0.5px; }
-        .info-value { font-size: 14px; font-weight: 600; color: #eeeae0; }
-        .payment-box { background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.02)); border: 1px solid rgba(201,168,76,0.3); border-radius: 12px; padding: 24px; margin: 24px 0; }
-        .payment-box h3 { color: #c8a84b; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .payment-amount { font-size: 32px; font-weight: 800; color: #e8c96a; margin: 8px 0; }
-        .payment-contact { font-size: 14px; color: #8caede; margin-top: 8px; }
-        .payment-contact a { color: #c8a84b; text-decoration: none; font-weight: 600; }
-        .footer { padding: 24px 32px; border-top: 1px solid rgba(201,168,76,0.1); text-align: center; }
-        .footer p { font-size: 12px; color: #6284b3; line-height: 1.6; }
-        .footer strong { color: #c8a84b; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #020611;
+            color: #eeeae0;
+        }
+
+        .wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #07172e 0%, #030816 100%);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c8a84b 0%, #a68428 100%);
+            padding: 40px 32px;
+            text-align: center;
+        }
+
+        .header-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            color: #020611;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: rgba(2, 6, 17, 0.85);
+            font-size: 16px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .body {
+            padding: 40px 32px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f4f0e8;
+            margin-bottom: 16px;
+        }
+
+        .text {
+            font-size: 15px;
+            color: #8caede;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c8a84b, #a68428);
+            color: #020611;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            margin: 8px 0 24px 0;
+        }
+
+        .info-box {
+            background: rgba(201, 168, 76, 0.05);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(201, 168, 76, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6284b3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #eeeae0;
+        }
+
+        .payment-box {
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), rgba(201, 168, 76, 0.02));
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .payment-box h3 {
+            color: #c8a84b;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .payment-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #e8c96a;
+            margin: 8px 0;
+        }
+
+        .payment-contact {
+            font-size: 14px;
+            color: #8caede;
+            margin-top: 8px;
+        }
+
+        .payment-contact a {
+            color: #c8a84b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer {
+            padding: 24px 32px;
+            border-top: 1px solid rgba(201, 168, 76, 0.1);
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: #6284b3;
+            line-height: 1.6;
+        }
+
+        .footer strong {
+            color: #c8a84b;
+        }
     </style>
 </head>
+
 <body>
-<div class="wrapper">
-    <div class="card">
-        <div class="header">
-            <div class="header-icon">🏆</div>
-            <h1>Registration Approved!</h1>
-            <p>JNJD 19th Edition — Journées Nationales de Jeux Développés</p>
-        </div>
-        <div class="body">
-            <p class="greeting">Hello, <span th:text="${memberName}">Member Name</span>!</p>
-            <p class="text">We're thrilled to let you know that your team's registration for the <strong>19th Edition of JNJD</strong> has been officially approved.</p>
-            <div class="status-badge">✅ Approved</div>
-
-            <div class="info-box">
-                <div class="info-row">
-                    <span class="info-label">Team Name</span>
-                    <span class="info-value" th:text="${teamName}">Team Name</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Your Role</span>
-                    <span class="info-value" th:text="${role}">Captain</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Registration ID</span>
-                    <span class="info-value" th:text="${registrationId}">uuid</span>
-                </div>
+    <div class="wrapper">
+        <div class="card">
+            <div class="header">
+                <div class="header-icon">🏆</div>
+                <h1>Registration Approved!</h1>
+                <p>JNJD 20th Edition</p>
             </div>
+            <div class="body">
+                <p class="greeting">Hello, <span th:text="${memberName}">Member Name</span>!</p>
+                <p class="text">We're thrilled to let you know that your team's registration for the <strong>20th
+                        Edition of JNJD</strong> has been officially approved.</p>
+                <div class="status-badge">✅ Approved</div>
 
-            <div class="payment-box">
-                <h3>💳 Payment Required</h3>
-                <p class="text" style="margin-bottom: 4px;">To confirm your participation, please complete your payment:</p>
-                <div class="payment-amount" th:text="${paymentAmount}">180 MAD</div>
-                <p class="payment-contact">
-                    For payment instructions, contact us at
-                    <a th:href="'mailto:' + ${paymentContact}" th:text="${paymentContact}">cit.inpt@gmail.com</a>
-                </p>
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Team Name</span>
+                        <span class="info-value" th:text="${teamName}">Team Name</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Your Role</span>
+                        <span class="info-value" th:text="${role}">Captain</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Registration ID</span>
+                        <span class="info-value" th:text="${registrationId}">uuid</span>
+                    </div>
+                </div>
+
+                <div class="payment-box">
+                    <h3>💳 Payment Required</h3>
+                    <p class="text" style="margin-bottom: 4px;">To confirm your participation, please complete your
+                        payment:</p>
+                    <div class="payment-amount" th:text="${paymentAmount} + ' MAD per team'">180 MAD per team</div>
+                    <p class="payment-contact">
+                        For payment instructions, contact us at
+                        <a th:href="'mailto:' + ${paymentContact}" th:text="${paymentContact}">cit.inpt@gmail.com</a>
+                    </p>
+                </div>
+
+                <p class="text">Please keep this email as proof of your approved registration. We look forward to seeing
+                    your team at JNJD!</p>
             </div>
-
-            <p class="text">Please keep this email as proof of your approved registration. We look forward to seeing your team at JNJD!</p>
-        </div>
-        <div class="footer">
-            <p>This email was sent automatically. Do not reply directly.<br>
-            Questions? Contact <strong th:text="${paymentContact}">cit.inpt@gmail.com</strong></p>
+            <div class="footer">
+                <p>This email was sent automatically. Do not reply directly.<br>
+                    Questions? Contact <strong th:text="${paymentContact}">cit.inpt@gmail.com</strong></p>
+            </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>

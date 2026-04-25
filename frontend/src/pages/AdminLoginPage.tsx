@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
             Admin Portal
           </h1>
           <p className="t-mono" style={{ fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-gold)' }}>
-            JNJD 19th Edition · Registration Management
+            JNJD 20th Edition · Registration Management
           </p>
         </div>
 

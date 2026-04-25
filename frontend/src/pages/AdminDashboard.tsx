@@ -144,7 +144,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="t-display" style={{ fontSize: '1rem', color: 'var(--text-primary)', lineHeight: 1.2 }}>JNJD Admin</p>
-            <p className="t-mono" style={{ fontSize: '9px', letterSpacing: '0.25em', color: 'var(--text-gold)', textTransform: 'uppercase' }}>19th Edition · Dashboard</p>
+            <p className="t-mono" style={{ fontSize: '9px', letterSpacing: '0.25em', color: 'var(--text-gold)', textTransform: 'uppercase' }}>20th Edition · Dashboard</p>
           </div>
         </div>
         <button className="btn-ghost btn-sm" onClick={handleLogout} id="admin-logout" style={{ borderRadius: 999, padding: '8px 18px' }}>

@@ -42,11 +42,11 @@ export default function RegistrationPage() {
           <img src="/assets/Logo BW 2.png" alt="JNJD" width={34} height={34} className="opacity-90 flex-shrink-0" />
           <div className="flex flex-col leading-none">
             <span className="font-outfit font-extrabold text-[#c8a84b] text-base tracking-tight leading-none">JNJD</span>
-            <span className="text-[9px] font-semibold text-[#6284b3] tracking-wider uppercase leading-none mt-0.5 hidden xs:block">19th Edition</span>
+            <span className="text-[9px] font-semibold text-[#6284b3] tracking-wider uppercase leading-none mt-0.5 hidden xs:block">20th Edition</span>
           </div>
           <span className="w-px h-6 bg-[#1c4481] mx-1 hidden md:block" />
           <span className="text-[10px] font-semibold text-[#6284b3] tracking-widest hidden md:block">
-            Journées Nationales des Jeunes Développeurs
+            JOURNÉE NATIONALE des JEUNES DÉVelopeurs
           </span>
         </div>
 
@@ -127,11 +127,11 @@ export default function RegistrationPage() {
 
           <h1 className="font-outfit text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9] mb-6">
             <span className="text-[#c8a84b] drop-shadow-[0_0_30px_rgba(200,168,75,0.3)]">JNJD</span><br />
-            <span>19TH EDITION</span>
+            <span>20TH EDITION</span>
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-[#6284b3] mb-4 max-w-2xl mx-auto leading-relaxed">
-            Journées Nationales des Jeunes Développeurs<br />
+            JOURNÉE NATIONALE des JEUNES DÉVelopeurs<br />
             Institut National des Postes et Télécommunications
           </p>
 
@@ -247,7 +247,7 @@ export default function RegistrationPage() {
             <h2 className="font-outfit text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
               Register Your <span className="text-[#c8a84b]">Team</span>
             </h2>
-            <p className="text-[#6284b3] text-sm sm:text-base">Secure your spot in the 19th edition of JNJD.</p>
+            <p className="text-[#6284b3] text-sm sm:text-base">Secure your spot in the 20th edition of JNJD.</p>
           </div>
           <RegistrationWizard />
         </div>
@@ -263,7 +263,7 @@ export default function RegistrationPage() {
               <img src="/assets/Logo BW 2.png" alt="JNJD" width={32} height={32} className="opacity-80" />
               <div className="flex flex-col">
                 <span className="font-outfit font-extrabold text-[#c8a84b] text-sm tracking-tight leading-none">JNJD 2026</span>
-                <span className="text-[9px] text-[#6284b3] tracking-widest uppercase mt-0.5">19th Edition</span>
+                <span className="text-[9px] text-[#6284b3] tracking-widest uppercase mt-0.5">20th Edition</span>
               </div>
             </div>
 

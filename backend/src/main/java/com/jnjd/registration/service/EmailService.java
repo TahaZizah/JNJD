@@ -44,9 +44,12 @@ public class EmailService {
             return;
         }
         for (Member member : members) {
+            if (member.getRole() != com.jnjd.registration.enums.MemberRole.CAPTAIN) {
+                continue;
+            }
             try {
                 sendApprovalEmail(member, registration);
-                log.info("Approval email sent to: {}", member.getEmail());
+                log.info("Approval email sent to captain: {}", member.getEmail());
             } catch (Exception e) {
                 // Email is best-effort — approval is already persisted in DB.
                 // Log and continue; don't propagate exception back to HTTP thread.
@@ -71,7 +74,7 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromAddress);
         helper.setTo(member.getEmail());
-        helper.setSubject("✅ Your JNJD 19th Edition Registration is Approved!");
+        helper.setSubject("✅ Your JNJD 20th Edition Registration is Approved!");
         helper.setText(html, true);
 
         mailSender.send(message);
