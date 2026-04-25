@@ -27,10 +27,11 @@ public class PresignController {
     @GetMapping("/presign")
     public ResponseEntity<PresignResponse> getPresignedUrl(
         @RequestParam String filename,
-        @RequestParam String contentType
+        @RequestParam String contentType,
+        @RequestParam(required = false, defaultValue = "proof") String fileType
     ) {
         validateFile(filename, contentType);
-        PresignResponse response = minioService.generatePresignedPutUrl(filename, contentType);
+        PresignResponse response = minioService.generatePresignedPutUrl(filename, contentType, fileType);
         return ResponseEntity.ok(response);
     }
 

@@ -31,9 +31,9 @@ public class MinioService {
     @Value("${minio.presign-expiry-minutes}")
     private int presignExpiryMinutes;
 
-    public PresignResponse generatePresignedPutUrl(String originalFilename, String contentType) {
-        String ext = getExtension(originalFilename);
-        String objectKey = "proofs/" + UUID.randomUUID() + "/" + originalFilename;
+    public PresignResponse generatePresignedPutUrl(String originalFilename, String contentType, String fileType) {
+        String folder = "cv".equalsIgnoreCase(fileType) ? "cvs" : "proofs";
+        String objectKey = folder + "/" + UUID.randomUUID() + "/" + originalFilename;
 
         try {
             String url = publicMinioClient.getPresignedObjectUrl(

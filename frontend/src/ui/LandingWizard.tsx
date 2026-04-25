@@ -52,7 +52,7 @@ export function Select({ label, value, onChange, options, error }: any) {
   );
 }
 
-export function FileDrop({ label, value, onChange, hint = 'PNG, JPG or PDF · max 5MB', accept = 'image/*,application/pdf' }: any) {
+export function FileDrop({ label, value, onChange, hint = 'PNG, JPG or PDF · max 5MB', accept = 'image/*,application/pdf', fileType = 'proof' }: any) {
   const [drag, setDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -66,7 +66,7 @@ export function FileDrop({ label, value, onChange, hint = 'PNG, JPG or PDF · ma
     setFileName(file.name);
     setError('');
     try {
-      const presign = await getPresignedUrl(file.name, file.type);
+      const presign = await getPresignedUrl(file.name, file.type, fileType);
       await uploadFileToMinIO(presign.uploadUrl, file, (pct) => setProgress(pct));
       onChange({ key: presign.objectKey, name: file.name, size: file.size });
     } catch (err: any) {
@@ -378,9 +378,9 @@ function StepDocs({ docs, update, members, isOfficial }: any) {
       )}
       
       <div className="grid md:grid-cols-3 gap-5">
-        <FileDrop label={`CV (Opt) · ${members[0].name || 'M1'}`} value={docs.cv1} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv1', v)} />
-        <FileDrop label={`CV (Opt) · ${members[1].name || 'M2'}`} value={docs.cv2} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv2', v)} />
-        <FileDrop label={`CV (Opt) · ${members[2].name || 'M3'}`} value={docs.cv3} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv3', v)} />
+        <FileDrop label={`CV (Opt) · ${members[0].name || 'M1'}`} value={docs.cv1} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv1', v)} fileType="cv" />
+        <FileDrop label={`CV (Opt) · ${members[1].name || 'M2'}`} value={docs.cv2} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv2', v)} fileType="cv" />
+        <FileDrop label={`CV (Opt) · ${members[2].name || 'M3'}`} value={docs.cv3} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv3', v)} fileType="cv" />
       </div>
     </div>
   );

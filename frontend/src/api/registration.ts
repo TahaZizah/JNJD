@@ -10,9 +10,9 @@ export async function submitRegistration(data: RegistrationFormData): Promise<Re
   return res.data
 }
 
-export async function getPresignedUrl(filename: string, contentType: string): Promise<PresignResponse> {
+export async function getPresignedUrl(filename: string, contentType: string, fileType: 'proof' | 'cv' = 'proof'): Promise<PresignResponse> {
   const res = await api.get<PresignResponse>('/registrations/presign', {
-    params: { filename, contentType },
+    params: { filename, contentType, fileType },
   })
   return res.data
 }
