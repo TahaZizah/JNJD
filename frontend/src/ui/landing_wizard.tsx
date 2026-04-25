@@ -162,7 +162,7 @@ function Wizard() {
   if (submitted) {
     return (
       <section id="register" className="relative py-28 md:py-36 border-t border-gold-500/10">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+        <div className="relative mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
           <div className="glass-gold rounded-3xl p-14 text-center max-w-3xl mx-auto">
             <div className="w-16 h-16 mx-auto rounded-full grid place-items-center mb-8" style={{
               background: 'radial-gradient(circle, rgba(201,168,76,0.3), transparent 70%)',
@@ -190,7 +190,7 @@ function Wizard() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute left-[-10%] top-[20%] w-[540px] h-[540px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.12), transparent 60%)' }} />
       </div>
-      <div className="relative mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="relative mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <div className="grid lg:grid-cols-12 gap-10 items-start">
           <div className="lg:col-span-4 lg:sticky lg:top-32">
             <Reveal>

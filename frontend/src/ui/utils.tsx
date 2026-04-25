@@ -56,9 +56,32 @@ function useInView(opts = { threshold: 0.12 }) {
   return [ref, inView];
 }
 
-// Reveal wrapper
+// Detect user preference for reduced motion
+function useReducedMotion() {
+  const [reduced, setReduced] = React.useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  );
+  React.useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e) => setReduced(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return reduced;
+}
+
+// Reveal wrapper — respects prefers-reduced-motion
 function Reveal({ children, delay = 0, y = 24, className = '' }) {
   const [ref, inView] = useInView();
+  const reduced = useReducedMotion();
+
+  // If user prefers reduced motion, skip animation entirely
+  if (reduced) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <div
       ref={ref}
@@ -106,4 +129,4 @@ export function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export {  EVENT_DATE, useCountdown, pad, useInView, Reveal, Stagger, Magnetic  };
+export { EVENT_DATE, useCountdown, pad, useInView, useReducedMotion, Reveal, Stagger, Magnetic };

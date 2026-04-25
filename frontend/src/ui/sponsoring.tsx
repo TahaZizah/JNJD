@@ -47,7 +47,7 @@ function SponsoringHero() {
   return (
     <section className="relative overflow-hidden pt-40 pb-24 lg:pt-48 lg:pb-32">
       <AgenticField density={36} />
-      <div className="relative mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="relative mx-auto max-w-[1400px] pt-40 pb-24 lg:pt-48 lg:pb-32" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <Reveal>
           <div className="flex items-center gap-4 mb-10">
             <span className="t-mono text-[10px] tracking-[0.35em] text-gold-500 uppercase">// For Partners</span>
@@ -58,7 +58,7 @@ function SponsoringHero() {
         <div className="grid lg:grid-cols-12 gap-10 items-end">
           <div className="lg:col-span-8">
             <Reveal delay={80}>
-              <h1 className="t-display text-[48px] md:text-[80px] lg:text-[110px] xl:text-[130px]">
+              <h1 className="t-display" style={{ fontSize: 'clamp(3rem, 8vw, 8.125rem)' }}>
                 <span className="block text-bone-100">Meet the engineers</span>
                 <span className="block">
                   <span className="gold-text">who will build</span>
@@ -116,7 +116,7 @@ function SponsoringHero() {
 function Ecosystem() {
   return (
     <section className="relative py-28 md:py-36 border-t border-gold-500/10">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <Reveal>
           <SectionHeader
             eyebrow="// The ecosystem"
@@ -197,7 +197,7 @@ function WhySponsor() {
   ];
   return (
     <section className="relative py-28 md:py-36 border-t border-gold-500/10">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <Reveal>
           <SectionHeader
             eyebrow="// Why sponsor"
@@ -290,7 +290,7 @@ function Tiers() {
 
   return (
     <section id="tiers" className="relative py-28 md:py-36 border-t border-gold-500/10">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <Reveal>
           <SectionHeader
             eyebrow="// Partnership formulas"
@@ -361,7 +361,7 @@ function LogoCloud() {
   const schools  = ['INPT', 'ENSIAS', 'EMI', 'INSEA', 'ENSA', 'FST', 'UM6P', 'ENSIMAG', 'UIR', 'Al Akhawayn'];
   return (
     <section className="relative py-24 md:py-28 border-t border-gold-500/10">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <Reveal>
           <div className="grid md:grid-cols-12 gap-10 items-start">
             <div className="md:col-span-4">
@@ -397,7 +397,7 @@ function LogoRow({ items, accent }) {
 function ContactSection() {
   return (
     <section id="contact" className="relative py-28 md:py-36 border-t border-gold-500/10">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <div className="grid lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
             <Reveal>

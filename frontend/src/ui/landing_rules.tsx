@@ -24,7 +24,7 @@ function SectionHeader({ eyebrow, title, kicker, align = 'left' }) {
 function About() {
   return (
     <section className="relative py-28 md:py-36">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <div className="grid lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
             <Reveal>
@@ -138,7 +138,7 @@ function Rules() {
           {/* Unofficial */}
           <Reveal delay={220} className="lg:col-span-4">
             <div className="glass rounded-2xl p-8 h-full lift">
-              <div className="absolute top-5 right-5 t-mono text-[10px] tracking-[0.25em] text-mist-400/80 uppercase">
+              <div className="t-mono text-[10px] tracking-[0.25em] text-mist-400/80 uppercase mb-6">
                 Open bracket
               </div>
               <div className="t-mono text-[10px] tracking-[0.3em] uppercase text-gold-500 mb-6">Rule 02 · B</div>

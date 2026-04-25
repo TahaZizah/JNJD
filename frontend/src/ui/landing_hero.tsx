@@ -13,8 +13,9 @@ function CountdownDigit({ label, value }) {
     <div className="flex flex-col items-center">
       <div className="relative" style={{ perspective: 800 }}>
         {/* Invisible spacer to maintain layout size */}
-        <div className="glass rounded-xl px-4 md:px-5 py-3 md:py-4 min-w-[68px] md:min-w-[90px] invisible flex items-center justify-center">
-          <div className="t-display text-4xl md:text-6xl tabular-nums text-center">
+        {/* Fluid min-width: scales from ~64px on mobile to 90px on desktop */}
+        <div className="glass rounded-xl px-4 md:px-5 py-3 md:py-4 invisible flex items-center justify-center" style={{ minWidth: 'clamp(4rem, 8vw, 5.625rem)' }}>
+          <div className="t-display tabular-nums text-center" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>
             00
           </div>
         </div>
@@ -29,7 +30,7 @@ function CountdownDigit({ label, value }) {
             className="absolute inset-0 glass rounded-xl flex items-center justify-center overflow-hidden"
             style={{ transformOrigin: 'center center' }}
           >
-            <div className="t-display text-4xl md:text-6xl gold-text tabular-nums text-center">
+            <div className="t-display gold-text tabular-nums text-center" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>
               {paddedValue}
             </div>
             {/* The split line should be part of the card so it flips with it! */}
@@ -53,7 +54,7 @@ function Hero() {
       <div className="absolute -right-[12%] top-[22%] w-[620px] h-[620px] orbit opacity-60 pointer-events-none" />
       <div className="absolute -right-[6%] top-[30%] w-[440px] h-[440px] orbit opacity-40 pointer-events-none" style={{ animationDirection: 'reverse', animationDuration: '48s' }} />
 
-      <div className="relative mx-auto max-w-[1400px] px-6 lg:px-10 pt-40 pb-24 lg:pt-48 lg:pb-32">
+      <div className="relative mx-auto max-w-[1400px] pt-40 pb-24 lg:pt-48 lg:pb-32" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         {/* top strip */}
         <Reveal>
           <div className="flex items-center gap-4 mb-10">
@@ -67,7 +68,8 @@ function Hero() {
         <div className="grid lg:grid-cols-12 gap-10 items-end">
           <div className="lg:col-span-8">
             <Reveal delay={80}>
-              <h1 className="t-display text-[56px] md:text-[84px] lg:text-[110px] xl:text-[130px]">
+              {/* Fluid hero type: 3.5rem on mobile → 8.125rem on large desktop, never causes horizontal scroll */}
+              <h1 className="t-display" style={{ fontSize: 'clamp(3.5rem, 9vw, 8.125rem)' }}>
                 <span className="block text-bone-100">JOURNÉES</span>
                 <span className="block text-bone-100/95">NATIONALES <span className="shimmer-text">des</span></span>
                 <span className="block">
@@ -104,11 +106,11 @@ function Hero() {
             <Reveal delay={120}>
               <div className="flex items-end gap-3 md:gap-4 flex-wrap">
                 <CountdownDigit label="Days" value={d} />
-                <span className="t-display text-4xl md:text-6xl text-gold-600/60 pb-7">:</span>
+                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
                 <CountdownDigit label="Hours" value={h} />
-                <span className="t-display text-4xl md:text-6xl text-gold-600/60 pb-7">:</span>
+                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
                 <CountdownDigit label="Minutes" value={m} />
-                <span className="t-display text-4xl md:text-6xl text-gold-600/60 pb-7">:</span>
+                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
                 <CountdownDigit label="Seconds" value={s} />
               </div>
             </Reveal>

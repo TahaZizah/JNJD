@@ -6,7 +6,7 @@ import { cn } from './utils';
 function Footer({ setRoute }) {
   return (
     <footer className="relative border-t border-gold-500/15 bg-ink-950">
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-20">
+      <div className="mx-auto max-w-[1400px] py-20" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         <div className="grid lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
             <div className="t-display text-5xl md:text-6xl text-bone-100 mb-4" style={{ textWrap: 'balance' }}>

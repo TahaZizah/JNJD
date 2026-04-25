@@ -88,34 +88,63 @@ export default function FileUploadZone({
     if (inputRef.current) inputRef.current.value = ''
   }
 
+  /**
+   * BUG FIX: Programmatically trigger the hidden file input when the user
+   * clicks anywhere in the drop zone rectangle. Without this, Linux GTK-based
+   * browsers (Firefox, Chromium) only open the file picker when the user
+   * clicks directly on the <input> element itself, making the large clickable
+   * area appear broken.
+   *
+   * We suppress the click when "done" so the whole zone isn't re-triggerable
+   * while a file is successfully uploaded — users must click the "Change" btn.
+   */
+  const handleZoneClick = () => {
+    if (status !== 'done' && status !== 'uploading') {
+      inputRef.current?.click()
+    }
+  }
+
   return (
     <div>
       <div
         className={`upload-zone ${status}`}
+        onClick={handleZoneClick}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
+        role="button"
+        tabIndex={0}
+        aria-label={`Upload file for ${memberName}`}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleZoneClick(); } }}
       >
         {status === 'idle' && (
           <>
+            {/*
+              Hidden via sr-only so it is accessible to assistive tech but
+              not directly clickable by mouse — the outer div handles all clicks.
+              This is the key fix for the Linux click-area bug.
+            */}
             <input
               ref={inputRef}
               type="file"
               accept={accept}
               onChange={handleChange}
               id={`${uploadId}-input`}
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden="true"
             />
-            <UploadIcon size={24} style={{ color: 'var(--indigo-400)', margin: '0 auto 0.5rem' }} />
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-              <strong style={{ color: 'var(--indigo-400)' }}>{placeholder}</strong>
+            <UploadIcon size={24} style={{ color: 'var(--gold)', margin: '0 auto 0.5rem' }} />
+            <p style={{ fontSize: '0.85rem', color: 'var(--foreground)', marginBottom: '0.25rem' }}>
+              <strong style={{ color: 'var(--gold)' }}>{placeholder}</strong>
             </p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{acceptLabel}</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{acceptLabel}</p>
           </>
         )}
 
         {status === 'uploading' && (
           <div style={{ pointerEvents: 'none' }}>
-            <div className="spinner spinner-indigo" style={{ margin: '0 auto 0.75rem' }} />
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div className="spinner" style={{ margin: '0 auto 0.75rem' }} />
+            <p style={{ fontSize: '0.85rem', color: 'var(--foreground)' }}>
               Uploading <strong>{fileName}</strong>… {progress}%
             </p>
             <div className="progress-bar" style={{ marginTop: '0.75rem' }}>
@@ -126,17 +155,17 @@ export default function FileUploadZone({
 
         {status === 'done' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center' }}>
-            <CheckCircleIcon size={20} style={{ color: 'var(--emerald-400)', flexShrink: 0 }} />
+            <CheckCircleIcon size={20} style={{ color: '#34d399', flexShrink: 0 }} />
             <div style={{ textAlign: 'left' }}>
-              <p style={{ fontSize: '0.85rem', color: 'var(--emerald-400)', fontWeight: 600 }}>
+              <p style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 600 }}>
                 Upload complete
               </p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{fileName}</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{fileName}</p>
             </div>
             <button
               type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={reset}
+              className="btn-ghost btn-sm"
+              onClick={(e) => { e.stopPropagation(); reset(); }}
               style={{ marginLeft: 'auto' }}
             >
               Change
@@ -146,18 +175,22 @@ export default function FileUploadZone({
 
         {status === 'error' && (
           <div>
+            {/* Keep a hidden input for retry; zone click will re-trigger it */}
             <input
               ref={inputRef}
               type="file"
               accept={accept}
               onChange={handleChange}
               id={`${uploadId}-retry`}
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden="true"
             />
-            <XCircleIcon size={20} style={{ color: 'var(--rose-400)', margin: '0 auto 0.5rem' }} />
-            <p style={{ fontSize: '0.85rem', color: 'var(--rose-400)', marginBottom: '0.25rem' }}>
+            <XCircleIcon size={20} style={{ color: '#f87171', margin: '0 auto 0.5rem' }} />
+            <p style={{ fontSize: '0.85rem', color: '#f87171', marginBottom: '0.25rem' }}>
               {errorMsg}
             </p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Click to try again</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>Click to try again</p>
           </div>
         )}
       </div>
