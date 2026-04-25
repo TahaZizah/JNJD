@@ -1,0 +1,579 @@
+{
+  "info": {
+    "_postman_id": "jnjd-api-tests-v1",
+    "name": "JNJD Registration API",
+    "description": "Comprehensive API tests for JNJD 19th Edition registration backend.\nCovers presigned URL generation, registration creation, validation, and admin flows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "{{BASE_URL}}",
+      "type": "string"
+    },
+    {
+      "key": "ADMIN_TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "LAST_REG_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "OBJECT_KEY_1",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/actuator/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Health is UP', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.status).to.eql('UP');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UP-01 Presign \u2014 Valid PDF",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/registrations/presign?filename=proof.pdf&contentType=application/pdf"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Response has uploadUrl', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('uploadUrl');",
+              "  pm.expect(body.uploadUrl).to.be.a('string').and.include('http');",
+              "  pm.collectionVariables.set('OBJECT_KEY_1', body.objectKey);",
+              "});",
+              "pm.test('Response has objectKey under proofs/', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.objectKey).to.match(/^proofs\\/.+\\/proof\\.pdf$/);",
+              "});",
+              "pm.test('expiresInSeconds is positive', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.expiresInSeconds).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UP-01 Presign \u2014 Valid PNG (Proof image)",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/registrations/presign?filename=proof.png&contentType=image/png"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 for PNG', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UP-04 Presign \u2014 Reject EXE file",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/registrations/presign?filename=malware.exe&contentType=application/pdf"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rejects .exe with 4xx', () => {",
+              "  pm.expect(pm.response.code).to.be.within(400, 499);",
+              "});",
+              "pm.test('Error message mentions allowed types', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(JSON.stringify(body)).to.match(/allowed|extension/i);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UP-04 Presign \u2014 Reject invalid content-type",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/registrations/presign?filename=test.pdf&contentType=text/html"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rejects text/html content-type with 4xx', () => {",
+              "  pm.expect(pm.response.code).to.be.within(400, 499);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "REG-01 Create Unofficial Team (Happy Path)",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"Postman Testers\",\n  \"isOfficial\": false,\n  \"description\": \"Automated API test team\",\n  \"members\": [\n    {\n      \"fullName\": \"Captain Test\",\n      \"email\": \"captain@test.local\",\n      \"phone\": \"0612345678\",\n      \"tshirtSize\": \"M\"\n    },\n    {\n      \"fullName\": \"Second Test\",\n      \"email\": \"second@test.local\",\n      \"phone\": \"0698765432\",\n      \"tshirtSize\": \"L\"\n    },\n    {\n      \"fullName\": \"Third Test\",\n      \"email\": \"third@test.local\",\n      \"phone\": \"0711223344\",\n      \"tshirtSize\": \"S\"\n    }\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('Response has UUID id', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.id).to.match(/^[0-9a-f-]{36}$/);",
+              "  pm.collectionVariables.set('LAST_REG_ID', body.id);",
+              "});",
+              "pm.test('Status is PENDING', () => {",
+              "  pm.expect(pm.response.json().status).to.eql('PENDING');",
+              "});",
+              "pm.test('Team name preserved', () => {",
+              "  pm.expect(pm.response.json().teamName).to.eql('Postman Testers');",
+              "});",
+              "pm.test('createdAt is present', () => {",
+              "  pm.expect(pm.response.json().createdAt).to.be.a('string');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "REG-02 Create Official Team (with proof keys)",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"Official Postman Team\",\n  \"isOfficial\": true,\n  \"members\": [\n    {\n      \"fullName\": \"Captain Official\",\n      \"email\": \"off_cap@test.local\",\n      \"phone\": \"0612345678\",\n      \"tshirtSize\": \"M\",\n      \"schoolName\": \"ENSIAS\",\n      \"proofFileKey\": \"{{OBJECT_KEY_1}}\"\n    },\n    {\n      \"fullName\": \"Second Official\",\n      \"email\": \"off_sec@test.local\",\n      \"phone\": \"0698765432\",\n      \"tshirtSize\": \"L\",\n      \"schoolName\": \"ENSA Rabat\",\n      \"proofFileKey\": \"proofs/fake-uuid/proof.pdf\"\n    },\n    {\n      \"fullName\": \"Third Official\",\n      \"email\": \"off_trd@test.local\",\n      \"phone\": \"0711223344\",\n      \"tshirtSize\": \"S\",\n      \"schoolName\": \"FST Rabat\",\n      \"proofFileKey\": \"proofs/fake-uuid-3/proof.pdf\"\n    }\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Official team: 201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('isOfficial true in response', () => {",
+              "  pm.expect(pm.response.json().isOfficial).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "VAL-01 Reject \u2014 Missing teamName",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"isOfficial\": false,\n  \"members\": [\n    {\"fullName\":\"A\",\"email\":\"a@a.com\",\"phone\":\"0612345678\",\"tshirtSize\":\"M\"},\n    {\"fullName\":\"B\",\"email\":\"b@b.com\",\"phone\":\"0698765432\",\"tshirtSize\":\"L\"},\n    {\"fullName\":\"C\",\"email\":\"c@c.com\",\"phone\":\"0711223344\",\"tshirtSize\":\"S\"}\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Reject 400 when teamName missing', () => pm.response.to.have.status(400));",
+              "pm.test('Error references teamName', () => {",
+              "  pm.expect(JSON.stringify(pm.response.json())).to.match(/teamName|team_name/i);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "VAL-02 Reject \u2014 Only 2 members",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"Short Team\",\n  \"isOfficial\": false,\n  \"members\": [\n    {\"fullName\":\"A\",\"email\":\"a@a.com\",\"phone\":\"0612345678\",\"tshirtSize\":\"M\"},\n    {\"fullName\":\"B\",\"email\":\"b@b.com\",\"phone\":\"0698765432\",\"tshirtSize\":\"L\"}\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Reject 400 for 2 members', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "VAL-03 Reject \u2014 Invalid Moroccan phone",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"Bad Phone Team\",\n  \"isOfficial\": false,\n  \"members\": [\n    {\"fullName\":\"A\",\"email\":\"a@a.com\",\"phone\":\"1234567890\",\"tshirtSize\":\"M\"},\n    {\"fullName\":\"B\",\"email\":\"b@b.com\",\"phone\":\"0698765432\",\"tshirtSize\":\"L\"},\n    {\"fullName\":\"C\",\"email\":\"c@c.com\",\"phone\":\"0711223344\",\"tshirtSize\":\"S\"}\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Reject invalid phone with 400', () => pm.response.to.have.status(400));",
+              "pm.test('Error references phone', () => {",
+              "  pm.expect(JSON.stringify(pm.response.json())).to.match(/phone/i);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "VAL-04 Reject \u2014 Official team missing proof key",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"No Proof Official\",\n  \"isOfficial\": true,\n  \"members\": [\n    {\"fullName\":\"Alice\",\"email\":\"a@a.com\",\"phone\":\"0612345678\",\"tshirtSize\":\"M\",\"schoolName\":\"ENSIAS\"},\n    {\"fullName\":\"Bobbie\",\"email\":\"b@b.com\",\"phone\":\"0698765432\",\"tshirtSize\":\"L\",\"schoolName\":\"ENSA\"},\n    {\"fullName\":\"Charlie\",\"email\":\"c@c.com\",\"phone\":\"0711223344\",\"tshirtSize\":\"S\",\"schoolName\":\"FST\"}\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Official without proof rejected with 4xx', () => {",
+              "  pm.expect(pm.response.code).to.be.within(400, 422);",
+              "});",
+              "pm.test('Error references proofFileKey', () => {",
+              "  pm.expect(JSON.stringify(pm.response.json())).to.match(/proof/i);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "VAL-05 Reject \u2014 tshirtSize OTHER without custom",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/registrations",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Forwarded-For",
+            "value": "{{$randomIP}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamName\": \"Other Size Team\",\n  \"isOfficial\": false,\n  \"members\": [\n    {\"fullName\":\"A\",\"email\":\"a@a.com\",\"phone\":\"0612345678\",\"tshirtSize\":\"OTHER\"},\n    {\"fullName\":\"B\",\"email\":\"b@b.com\",\"phone\":\"0698765432\",\"tshirtSize\":\"L\"},\n    {\"fullName\":\"C\",\"email\":\"c@c.com\",\"phone\":\"0711223344\",\"tshirtSize\":\"S\"}\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('OTHER size without custom rejected with 4xx', () => {",
+              "  pm.expect(pm.response.code).to.be.within(400, 422);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-05 Reject \u2014 Unauthenticated access",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/admin/registrations"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Unauthenticated returns 401 or 403', () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.cookies.clear();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-01 Login (valid credentials)",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/admin/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{ADMIN_USER}}\",\n  \"password\": \"{{ADMIN_PASS}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Admin login 200', () => pm.response.to.have.status(200));",
+              "pm.test('Token present in cookie', () => {",
+              "  const cookie = pm.cookies.get('admin_token');",
+              "  pm.expect(cookie).to.not.be.undefined;",
+              "  pm.collectionVariables.set('ADMIN_TOKEN', cookie);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-02 List registrations (paginated)",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/admin/registrations?page=0&size=10",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "admin_token={{ADMIN_TOKEN}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('List 200', () => pm.response.to.have.status(200));",
+              "pm.test('Paginated response shape', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('content');",
+              "  pm.expect(body).to.have.property('total');",
+              "  pm.expect(body.content).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-03 Get registration detail",
+      "request": {
+        "method": "GET",
+        "url": "{{BASE_URL}}/api/v1/admin/registrations/{{LAST_REG_ID}}",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "admin_token={{ADMIN_TOKEN}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Detail 200', () => pm.response.to.have.status(200));",
+              "pm.test('Detail has members array of 3', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.members).to.be.an('array').with.lengthOf(3);",
+              "});",
+              "pm.test('Members have correct roles', () => {",
+              "  const roles = pm.response.json().members.map(m => m.role);",
+              "  pm.expect(roles).to.include('CAPTAIN');",
+              "  pm.expect(roles).to.include('SECOND');",
+              "  pm.expect(roles).to.include('THIRD');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-04 Update status to APPROVED",
+      "request": {
+        "method": "PATCH",
+        "url": "{{BASE_URL}}/api/v1/admin/registrations/{{LAST_REG_ID}}/status",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "admin_token={{ADMIN_TOKEN}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"APPROVED\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status update 200', () => pm.response.to.have.status(200));",
+              "pm.test('Status is APPROVED', () => {",
+              "  pm.expect(pm.response.json().status).to.eql('APPROVED');",
+              "});",
+              "pm.test('Status history entry added', () => {",
+              "  const history = pm.response.json().statusHistory;",
+              "  pm.expect(history).to.be.an('array').that.is.not.empty;",
+              "  const last = history[history.length - 1];",
+              "  pm.expect(last.newStatus).to.eql('APPROVED');",
+              "  pm.expect(last.oldStatus).to.eql('PENDING');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN-06 Logout",
+      "request": {
+        "method": "POST",
+        "url": "{{BASE_URL}}/api/v1/admin/auth/logout",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "admin_token={{ADMIN_TOKEN}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Logout 200', () => pm.response.to.have.status(200));",
+              "pm.test('Cookie cleared', () => {",
+              "  const cookie = pm.cookies.get('admin_token');",
+              "  pm.expect(!cookie || cookie === '').to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
