@@ -138,7 +138,7 @@ function Hero() {
                     ))}
                   </div>
                   <span className="t-mono text-[11px] tracking-[0.2em] uppercase text-bone-100/60">
-                    312 teams · 936 developers registered
+                    Highly qualified teams registered
                   </span>
                 </div>
               </div>
