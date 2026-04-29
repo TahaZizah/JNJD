@@ -109,12 +109,11 @@ function Rules() {
           {/* Official */}
           <Reveal delay={140} className="lg:col-span-4">
             <div className="relative rounded-2xl p-8 h-full tier-featured">
-              <div className="absolute top-5 right-5 t-mono text-[10px] tracking-[0.25em] text-gold-300 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-400 dot-live"></span> Main bracket
-              </div>
               <div className="t-mono text-[10px] tracking-[0.3em] uppercase text-gold-400 mb-6">Rule 02 · A</div>
-              <Icons.IconShield size={28} className="text-gold-300 mb-4" />
-              <div className="t-display text-3xl text-bone-100 mb-3">Official teams</div>
+              <div className="flex items-center gap-3 mb-3">
+                <Icons.IconShield size={28} className="text-gold-300" />
+                <div className="t-display text-3xl text-bone-100">Official teams</div>
+              </div>
               <p className="text-sm text-bone-100/75 leading-relaxed mb-5">
                 Open to all engineering, scientific and preparatory schools operating on Moroccan soil.
                 Eligible for the national title, cash prizes, and the travelling JNJD trophy.
@@ -138,12 +137,11 @@ function Rules() {
           {/* Unofficial */}
           <Reveal delay={220} className="lg:col-span-4">
             <div className="glass rounded-2xl p-8 h-full lift">
-              <div className="t-mono text-[10px] tracking-[0.25em] text-mist-400/80 uppercase mb-6">
-                Open bracket
-              </div>
               <div className="t-mono text-[10px] tracking-[0.3em] uppercase text-gold-500 mb-6">Rule 02 · B</div>
-              <Icons.IconGlobe size={28} className="text-mist-400 mb-4" />
-              <div className="t-display text-3xl text-bone-100 mb-3">Unofficial teams</div>
+              <div className="flex items-center gap-3 mb-3">
+                <Icons.IconGlobe size={28} className="text-mist-400" />
+                <div className="t-display text-3xl text-bone-100">Unofficial teams</div>
+              </div>
               <p className="text-sm text-bone-100/70 leading-relaxed mb-5">
                 Reserved for international schools and teams who have already claimed three JNJD titles.
                 They compete for honour, ranking, and the unofficial podium.
@@ -169,17 +167,16 @@ function Rules() {
           {/* Timeline strip */}
           <Reveal delay={80} className="lg:col-span-12">
             <div className="glass rounded-2xl p-2 mt-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-mist-400/10 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-mist-400/10 rounded-xl overflow-hidden">
                 {[
                   { step: '01', t: 'Register team', d: 'Until 05 May 2026', icon: IconUsers },
                   { step: '02', t: 'Pay fee (180 MAD)', d: 'Bank transfer or on-site', icon: IconBrief },
-                  { step: '03', t: 'Qualifier',       d: '10 May · Online', icon: IconCode },
-                  { step: '04', t: 'Finals @ INPT',   d: '16 May · Rabat',  icon: IconCrown },
+                  { step: '03', t: 'Finals @ INPT',   d: '16 May · Rabat',  icon: IconCrown },
                 ].map((s, i) => (
-                  <div key={i} className="bg-ink-900/90 p-6 flex items-start gap-4">
-                    <div className="t-display text-2xl gold-text">{s.step}</div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 t-mono text-[10px] tracking-[0.25em] uppercase text-gold-500 mb-2">
+                  <div key={i} className="bg-ink-900/90 p-6 flex flex-col items-center justify-center text-center gap-2">
+                    <div className="t-display text-3xl gold-text mb-1">{s.step}</div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex items-center justify-center gap-2 t-mono text-[10px] tracking-[0.25em] uppercase text-gold-500 mb-1">
                         <s.icon size={12} /> {s.t}
                       </div>
                       <div className="text-sm text-bone-100/80">{s.d}</div>

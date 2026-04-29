@@ -23,7 +23,12 @@ function Footer({ setRoute }) {
           <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
             <FooterCol title="Event" links={['Home', 'Rules', 'Register', 'Schedule']} onClick={setRoute} />
             <FooterCol title="Partners" links={['Brochure', 'Press kit']} onClick={setRoute} />
-            <FooterCol title="Community" links={['CIT', 'INPT', 'LinkedIn', 'Instagram']} onClick={setRoute} />
+            <FooterCol title="Community" links={[
+              'CIT', 
+              { label: 'INPT', href: 'https://www.inpt.ac.ma/' }, 
+              { label: 'LinkedIn', href: 'https://ma.linkedin.com/company/cit-inpt' }, 
+              { label: 'Instagram', href: 'https://www.instagram.com/cit.inpt/' }
+            ]} />
           </div>
         </div>
         <div className="hr-gold my-12"></div>
@@ -45,11 +50,23 @@ function FooterCol({ title, links }) {
     <div>
       <div className="t-mono text-[10px] uppercase tracking-[0.3em] text-gold-500 mb-4">{title}</div>
       <ul className="space-y-2.5">
-        {links.map(l => (
-          <li key={l}>
-            <a className="text-bone-100/70 hover:text-gold-300 transition text-sm" href="#">{l}</a>
-          </li>
-        ))}
+        {links.map(l => {
+          const isObj = typeof l === 'object';
+          const label = isObj ? l.label : l;
+          const href = isObj ? l.href : '#';
+          return (
+            <li key={label}>
+              <a 
+                className="text-bone-100/70 hover:text-gold-300 transition text-sm" 
+                href={href}
+                target={href !== '#' ? '_blank' : undefined}
+                rel={href !== '#' ? 'noopener noreferrer' : undefined}
+              >
+                {label}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
