@@ -74,7 +74,7 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromAddress);
         helper.setTo(member.getEmail());
-        helper.setSubject("✅ Your JNJD 20th Edition Registration is Approved!");
+        helper.setSubject("Your JNJD 20th Edition Registration is Approved!");
         helper.setText(html, true);
 
         mailSender.send(message);
