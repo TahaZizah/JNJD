@@ -59,16 +59,29 @@ export const registrationSchema = z.object({
   members: z.tuple([memberSchema, memberSchema, memberSchema]),
 }).superRefine((data, ctx) => {
   const emails = data.members.map(m => m.email.toLowerCase().trim()).filter(Boolean)
-  const seen = new Set<string>()
+  const seenEmails = new Set<string>()
   emails.forEach((email, i) => {
-    if (seen.has(email)) {
+    if (seenEmails.has(email)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['members', i, 'email'],
         message: 'Each member must have a unique email address',
       })
     }
-    seen.add(email)
+    seenEmails.add(email)
+  })
+
+  const phones = data.members.map(m => m.phone.trim()).filter(Boolean)
+  const seenPhones = new Set<string>()
+  phones.forEach((phone, i) => {
+    if (seenPhones.has(phone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['members', i, 'phone'],
+        message: 'Each member must have a unique phone number',
+      })
+    }
+    seenPhones.add(phone)
   })
 })
 

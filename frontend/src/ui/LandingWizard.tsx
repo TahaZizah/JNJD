@@ -201,6 +201,7 @@ export function Wizard() {
   const validateMembers = () => {
     const errors: Record<string, string> = {};
     const emails: string[] = [];
+    const phones: string[] = [];
     data.members.forEach((m, i) => {
       if (m.email && !isValidEmail(m.email)) {
         errors[`member_${i}_email`] = 'Invalid email (must contain @ and a dot)';
@@ -217,6 +218,12 @@ export function Wizard() {
           errors[`member_${i}_email`] = 'Each member must have a unique email';
         }
         emails.push(lower);
+      }
+      if (m.phone && m.phone.length === 10) {
+        if (phones.includes(m.phone)) {
+          errors[`member_${i}_phone`] = 'Each member must have a unique phone number';
+        }
+        phones.push(m.phone);
       }
     });
     return errors;
