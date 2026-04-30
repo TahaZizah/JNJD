@@ -57,6 +57,19 @@ export const registrationSchema = z.object({
   isOfficial: z.boolean(),
   description: z.string().max(1000, 'Description must not exceed 1000 characters').optional(),
   members: z.tuple([memberSchema, memberSchema, memberSchema]),
+}).superRefine((data, ctx) => {
+  const emails = data.members.map(m => m.email.toLowerCase().trim()).filter(Boolean)
+  const seen = new Set<string>()
+  emails.forEach((email, i) => {
+    if (seen.has(email)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['members', i, 'email'],
+        message: 'Each member must have a unique email address',
+      })
+    }
+    seen.add(email)
+  })
 })
 
 export const officialRegistrationSchema = z.object({
@@ -85,6 +98,24 @@ export function validateFileForUpload(
     return 'File size must not exceed 5 MB'
   }
   return null
+}
+
+/**
+ * Sanitize phone input: digits only, must start with 0, max 10 chars.
+ */
+export function sanitizePhone(raw: string): string {
+  let digits = raw.replace(/\D/g, '')
+  if (digits.length > 0 && digits[0] !== '0') {
+    digits = '0' + digits
+  }
+  return digits.slice(0, 10)
+}
+
+/**
+ * Validate email format (contains @ and a dot after @).
+ */
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 export { CV_EXTENSIONS }

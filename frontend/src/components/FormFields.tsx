@@ -10,12 +10,20 @@ interface Props {
   required?: boolean
   disabled?: boolean
   className?: string
+  /** Optional filter applied to the raw input value before setting it (e.g. phone sanitizer) */
+  onChangeFilter?: (raw: string) => string
 }
 
 export function FormInput({
-  name, control, label, placeholder, type = 'text', required, disabled, className
+  name, control, label, placeholder, type = 'text', required, disabled, className, onChangeFilter
 }: Props) {
   const { field, fieldState } = useController({ name, control })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value
+    field.onChange(onChangeFilter ? onChangeFilter(raw) : raw)
+  }
+
   return (
     <div className={`field ${className ?? ''}`}>
       <label className="field-label" htmlFor={name}>
@@ -23,6 +31,7 @@ export function FormInput({
       </label>
       <input
         {...field}
+        onChange={handleChange}
         type={type}
         placeholder={placeholder}
         disabled={disabled}

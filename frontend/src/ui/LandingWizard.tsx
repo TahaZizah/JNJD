@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as Icons from './icons';
 import { cn } from './utils';
 import { submitRegistration, getPresignedUrl, uploadFileToMinIO } from '../api/registration';
 import { useNavigate } from 'react-router-dom';
+import { sanitizePhone, isValidEmail } from '../schemas/registration';
 
 const WIZARD_STEPS = [
   { id: 'team',    label: 'Team',     sub: 'Identity & category' },
@@ -149,6 +150,8 @@ export function StepIndicator({ step, onJump }: any) {
   );
 }
 
+const STORAGE_KEY = 'jnjd_landing_wizard';
+
 export function Wizard() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -164,6 +167,26 @@ export function Wizard() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.data) setData(parsed.data);
+        if (typeof parsed.step === 'number') setStep(parsed.step);
+      }
+    } catch {}
+  }, []);
+
+  // Save to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, step }));
+    } catch {}
+  }, [data, step]);
 
   const updateTeam = (k: string, v: string) => setData(d => ({ ...d, team: { ...d.team, [k]: v } }));
   const updateMember = (i: number, k: string, v: string) => setData(d => ({
@@ -174,10 +197,52 @@ export function Wizard() {
 
   const isOfficial = data.team.category.includes('Official');
 
+  // Live validation helpers
+  const validateMembers = () => {
+    const errors: Record<string, string> = {};
+    const emails: string[] = [];
+    data.members.forEach((m, i) => {
+      if (m.email && !isValidEmail(m.email)) {
+        errors[`member_${i}_email`] = 'Invalid email (must contain @ and a dot)';
+      }
+      if (m.phone && m.phone.length > 0 && m.phone.length < 10) {
+        errors[`member_${i}_phone`] = 'Phone must be 10 digits';
+      }
+      if (m.phone && m.phone.length > 0 && !/^0[67]/.test(m.phone)) {
+        errors[`member_${i}_phone`] = 'Phone must start with 06 or 07';
+      }
+      if (m.email) {
+        const lower = m.email.toLowerCase().trim();
+        if (emails.includes(lower)) {
+          errors[`member_${i}_email`] = 'Each member must have a unique email';
+        }
+        emails.push(lower);
+      }
+    });
+    return errors;
+  };
+
+  // Update field errors live as members change
+  useEffect(() => {
+    if (step === 1) {
+      setFieldErrors(validateMembers());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.members, step]);
+
   const canNext = (() => {
     if (step === 0) return data.team.name && data.team.category && data.team.school;
-    if (step === 1) return data.members.every(m => m.name && m.email && m.phone && m.tshirtSize);
-    if (step === 2) return !isOfficial || (data.docs.id1 && data.docs.id2 && data.docs.id3);
+    if (step === 1) {
+      const memberErrors = validateMembers();
+      const hasFieldErrors = Object.keys(memberErrors).length > 0;
+      return data.members.every(m => m.name && m.email && m.phone && m.phone.length === 10 && m.tshirtSize) && !hasFieldErrors;
+    }
+    if (step === 2) {
+      const cvsMissing = !data.docs.cv1 || !data.docs.cv2 || !data.docs.cv3;
+      if (cvsMissing) return false;
+      if (isOfficial) return data.docs.id1 && data.docs.id2 && data.docs.id3;
+      return true;
+    }
     if (step === 3) return data.agree;
     return true;
   })();
@@ -203,6 +268,7 @@ export function Wizard() {
       };
       
       const res = await submitRegistration(payload as any);
+      localStorage.removeItem(STORAGE_KEY);
       navigate(`/confirmation/${res.id}`);
     } catch (err: any) {
       setErrorMsg(err?.response?.data?.error || err.message || 'Submission failed');
@@ -254,7 +320,7 @@ export function Wizard() {
             <div className="glass rounded-3xl p-8 md:p-10 min-h-[520px] relative overflow-hidden">
               <div key={step} style={{ animation: 'fadeSlide 500ms cubic-bezier(.2,.7,.2,1)' }}>
                 {step === 0 && <StepTeam data={data.team} update={updateTeam} />}
-                {step === 1 && <StepMembers members={data.members} update={updateMember} />}
+                {step === 1 && <StepMembers members={data.members} update={updateMember} fieldErrors={fieldErrors} />}
                 {step === 2 && <StepDocs docs={data.docs} update={updateDoc} members={data.members} isOfficial={isOfficial} />}
                 {step === 3 && <StepReview data={data} setAgree={(v: boolean) => setData(d => ({ ...d, agree: v }))} errorMsg={errorMsg} />}
               </div>
@@ -317,7 +383,7 @@ function StepTeam({ data, update }: any) {
   );
 }
 
-function StepMembers({ members, update }: any) {
+function StepMembers({ members, update, fieldErrors }: any) {
   return (
     <div>
       <div className="mb-8">
@@ -341,8 +407,17 @@ function StepMembers({ members, update }: any) {
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <Field label="Full name" value={m.name} onChange={(v: string) => update(i, 'name', v)} />
-              <Field label="Email" type="email" value={m.email} onChange={(v: string) => update(i, 'email', v)} />
-              <Field label="Phone (06XXXXXXXX)" value={m.phone} onChange={(v: string) => update(i, 'phone', v)} />
+              <Field label="Email" type="email" value={m.email}
+                onChange={(v: string) => update(i, 'email', v)}
+                error={fieldErrors[`member_${i}_email`]}
+              />
+              <Field label="Phone (06XXXXXXXX)" value={m.phone}
+                onChange={(v: string) => {
+                  const sanitized = sanitizePhone(v);
+                  update(i, 'phone', sanitized);
+                }}
+                error={fieldErrors[`member_${i}_phone`]}
+              />
               <Select label="T-Shirt Size"
                 value={m.tshirtSize}
                 onChange={(v: string) => update(i, 'tshirtSize', v)}
@@ -361,11 +436,11 @@ function StepDocs({ docs, update, members, isOfficial }: any) {
     <div>
       <div className="mb-8">
         <div className="t-mono text-[10px] tracking-[0.3em] uppercase text-gold-500 mb-2">03 · Documents</div>
-        <h3 className="t-display text-3xl md:text-4xl text-bone-100">{isOfficial ? "Prove enrollment." : "Career & CVs."}</h3>
+        <h3 className="t-display text-3xl md:text-4xl text-bone-100">{isOfficial ? "Prove enrollment." : "Upload your CVs."}</h3>
         <p className="text-bone-100/60 mt-2">
           {isOfficial 
-            ? "We verify each ID against your school's registrar. You can also optionally upload CVs for our sponsors."
-            : "No student IDs required for unofficial teams. Optionally upload CVs for our sponsors."}
+            ? "We verify each ID against your school's registrar. You must also upload CVs for all members."
+            : "No student IDs required for unofficial teams. All members must upload their CV."}
         </p>
       </div>
       
@@ -378,9 +453,9 @@ function StepDocs({ docs, update, members, isOfficial }: any) {
       )}
       
       <div className="grid md:grid-cols-3 gap-5">
-        <FileDrop label={`CV (Opt) · ${members[0].name || 'M1'}`} value={docs.cv1} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv1', v)} fileType="cv" />
-        <FileDrop label={`CV (Opt) · ${members[1].name || 'M2'}`} value={docs.cv2} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv2', v)} fileType="cv" />
-        <FileDrop label={`CV (Opt) · ${members[2].name || 'M3'}`} value={docs.cv3} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv3', v)} fileType="cv" />
+        <FileDrop label={`CV · ${members[0].name || 'M1'}`} value={docs.cv1} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv1', v)} fileType="cv" />
+        <FileDrop label={`CV · ${members[1].name || 'M2'}`} value={docs.cv2} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv2', v)} fileType="cv" />
+        <FileDrop label={`CV · ${members[2].name || 'M3'}`} value={docs.cv3} accept=".pdf,.doc,.docx" hint="PDF/DOCX" onChange={(v: any) => update('cv3', v)} fileType="cv" />
       </div>
     </div>
   );

@@ -74,7 +74,11 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromAddress);
         helper.setTo(member.getEmail());
+<<<<<<< HEAD
         helper.setSubject("Your JNJD 20th Edition Registration is Approved!");
+=======
+        helper.setSubject(" Your JNJD 20th Edition Registration is Approved!");
+>>>>>>> 27dd930 (feat: implement landing wizard progress persistence, phone sanitization, and real-time member field validation)
         helper.setText(html, true);
 
         mailSender.send(message);

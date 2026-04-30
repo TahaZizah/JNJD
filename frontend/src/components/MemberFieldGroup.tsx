@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { FormInput, FormSelect } from './FormFields'
 import type { RegistrationFormValues } from '../schemas/registration'
+import { sanitizePhone } from '../schemas/registration'
 
 const TSHIRT_OPTIONS = [
   { value: 'XS',    label: 'XS — Extra Small' },
@@ -69,6 +70,7 @@ export default function MemberFieldGroup({ index, isOfficial, showSchool }: Prop
           placeholder="0612345678"
           type="tel"
           required
+          onChangeFilter={sanitizePhone}
         />
         <FormSelect
           name={`members.${index}.tshirtSize`}

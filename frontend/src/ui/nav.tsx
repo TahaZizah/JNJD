@@ -51,7 +51,6 @@ function Nav({ route, setRoute }) {
             <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
               {link('home', 'Home')}
               {link('home#rules', 'Rules')}
-              {link('home#register', 'Register')}
             </nav>
 
             {/* Right CTA */}
@@ -110,7 +109,6 @@ function Nav({ route, setRoute }) {
             {[
               ['home', 'Home'],
               ['home#rules', 'Rules'],
-              ['home#register', 'Register'],
             ].map(([id, label]) => (
               <button
                 key={id}

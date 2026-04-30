@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -58,14 +58,47 @@ export default function RegistrationWizard() {
   const [step, setStep] = useState(1)
   const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({})
 
+  const STORAGE_KEY = 'jnjd_registration_wizard'
+
   const methods = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       teamName: '', isOfficial: false, description: '',
       members: [{ ...DEFAULT_MEMBER }, { ...DEFAULT_MEMBER }, { ...DEFAULT_MEMBER }],
     },
-    mode: 'onBlur',
+    mode: 'onChange',
   })
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.values) methods.reset(parsed.values)
+        if (typeof parsed.step === 'number') setStep(parsed.step)
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Save to localStorage on changes
+  const saveToStorage = useCallback(() => {
+    try {
+      const values = methods.getValues()
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, step }))
+    } catch {}
+  }, [methods, step])
+
+  useEffect(() => {
+    saveToStorage()
+  }, [step, saveToStorage])
+
+  // Also save on every field change
+  useEffect(() => {
+    const subscription = methods.watch(() => saveToStorage())
+    return () => subscription.unsubscribe()
+  }, [methods, saveToStorage])
 
   const { watch, handleSubmit, setValue, trigger } = methods
   const isOfficial = watch('isOfficial')
@@ -73,7 +106,10 @@ export default function RegistrationWizard() {
 
   const mutation = useMutation({
     mutationFn: submitRegistration,
-    onSuccess: (data) => navigate(`/confirmation/${data.id}`),
+    onSuccess: (data) => {
+      localStorage.removeItem(STORAGE_KEY)
+      navigate(`/confirmation/${data.id}`)
+    },
   })
 
   const handleNext = async () => {
@@ -83,6 +119,13 @@ export default function RegistrationWizard() {
     } else if (step === 2) {
       if (isOfficial && members.some((m) => !m.proofFileKey)) {
         setUploadErrors(prev => ({ ...prev, _proof: '1' }))
+        return
+      }
+      valid = true
+    } else if (step === 3) {
+      // CVs are mandatory for all members
+      if (members.some((m) => !m.cvFileKey)) {
+        setUploadErrors(prev => ({ ...prev, _cv: '1' }))
         return
       }
       valid = true
@@ -208,19 +251,26 @@ export default function RegistrationWizard() {
           {/* STEP 3 */}
           {step === 3 && (
             <div className="animate-fade-in-scale">
-              <StepHeader icon={BriefcaseIcon} title="Career & Recruitment" subtitle="This step is completely optional." />
+              <StepHeader icon={BriefcaseIcon} title="Career & Recruitment" subtitle="Upload CVs for all team members." />
               <div style={{
                 background: 'linear-gradient(135deg, rgba(200,168,75,0.1) 0%, rgba(200,168,75,0.04) 100%)',
                 border: '1px solid rgba(200,168,75,0.22)', borderRadius: 'var(--radius-lg)',
                 padding: '1.5rem', marginBottom: '2rem',
               }}>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-                  🚀 Want to get noticed by our sponsor companies?
+                  🚀 Get noticed by our sponsor companies!
                 </p>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-                  Upload your CV to share it with recruiters at the event stands. Entirely optional — won't affect your registration.
+                  Upload your CV to share it with recruiters at the event stands. All team members must upload their CV.
                 </p>
               </div>
+
+              {uploadErrors._cv && (
+                <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>
+                  <AlertCircleIcon size={16} style={{ flexShrink: 0 }} />
+                  All 3 members must upload their CV before proceeding.
+                </div>
+              )}
 
               {[0, 1, 2].map(i => (
                 <div key={i} style={{
@@ -234,29 +284,26 @@ export default function RegistrationWizard() {
                       <p style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{members[i].fullName || `Member ${i + 1}`}</p>
                     </div>
                     <span style={{
-                      fontSize: '0.65rem', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase',
-                      letterSpacing: '0.6px', background: 'rgba(255,255,255,0.04)',
-                      padding: '0.15rem 0.55rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--dim)',
-                    }}>Optional</span>
+                      fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', textTransform: 'uppercase',
+                      letterSpacing: '0.6px', background: 'rgba(200,168,75,0.08)',
+                      padding: '0.15rem 0.55rem', borderRadius: 'var(--radius-full)', border: '1px solid rgba(200,168,75,0.2)',
+                    }}>Required</span>
                   </div>
                   <div className="field">
-                    <label className="field-label">CV / Résumé</label>
+                    <label className="field-label">CV / Résumé <span style={{ color: 'var(--gold)' }}>*</span></label>
                     <FileUploadZone
                       uploadId={`cv-${i}`} memberIndex={i}
                       memberName={members[i].fullName || `Member ${i + 1}`}
                       accept=".pdf,.doc,.docx" acceptLabel="PDF, DOC, DOCX — max 5 MB"
                       placeholder="Click to upload CV or drag & drop"
                       value={members[i].cvFileKey}
-                      onChange={key => setValue(`members.${i}.cvFileKey` as any, key)}
+                      onChange={key => { setValue(`members.${i}.cvFileKey` as any, key); setUploadErrors(p => { const n = { ...p }; delete n._cv; return n }) }}
                       onError={msg => setUploadErrors(p => ({ ...p, [`cv_${i}`]: msg }))}
                     />
                     {uploadErrors[`cv_${i}`] && <span className="field-error">{uploadErrors[`cv_${i}`]}</span>}
                   </div>
                 </div>
               ))}
-              <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--muted)', marginTop: '1rem' }}>
-                Skip this step by clicking <strong>Continue</strong>.
-              </p>
             </div>
           )}
 
