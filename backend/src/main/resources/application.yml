@@ -60,9 +60,11 @@ spring:
           starttls:
             enable: ${MAIL_STARTTLS_ENABLE:true}
             required: ${MAIL_STARTTLS_REQUIRED:true}
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
+          ssl:
+            trust: ${MAIL_HOST:smtp.gmail.com}
+        connectiontimeout: 10000
+        timeout: 10000
+        writetimeout: 10000
 
   thymeleaf:
     prefix: classpath:/templates/
