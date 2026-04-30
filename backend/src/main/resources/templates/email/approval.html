@@ -97,8 +97,9 @@
 
         .info-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
+            gap: 8px;
             padding: 8px 0;
             border-bottom: 1px solid rgba(201, 168, 76, 0.05);
         }
@@ -184,19 +185,19 @@
                 <p class="greeting">Hello, <span th:text="${memberName}">Member Name</span>!</p>
                 <p class="text">We're thrilled to let you know that your team's registration for the <strong>20th
                         Edition of JNJD</strong> has been officially approved.</p>
-                <div class="status-badge">✅ Approved</div>
+                <div class="status-badge">Approved</div>
 
                 <div class="info-box">
                     <div class="info-row">
-                        <span class="info-label">Team Name</span>
+                        <span class="info-label">Team name : </span>
                         <span class="info-value" th:text="${teamName}">Team Name</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Your Role</span>
-                        <span class="info-value" th:text="${role}">Captain</span>
+                        <span class="info-label">Captain : </span>
+                        <span class="info-value" th:text="${memberName}">Captain Name</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Registration ID</span>
+                        <span class="info-label">Id : </span>
                         <span class="info-value" th:text="${registrationId}">uuid</span>
                     </div>
                 </div>
@@ -207,6 +208,8 @@
                         payment:</p>
                     <div class="payment-amount" th:text="${paymentAmount} + ' MAD per team'">180 MAD per team</div>
                     <p class="payment-contact">
+                        M FARID ID AISSA<br>
+                        RIB : 011 810 0000082000014337 37<br><br>
                         For payment instructions, contact us at
                         <a th:href="'mailto:' + ${paymentContact}" th:text="${paymentContact}">cit.inpt@gmail.com</a>
                     </p>
