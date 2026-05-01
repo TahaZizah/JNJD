@@ -48,10 +48,10 @@ function Nav({ route, setRoute }) {
             </button>
 
             {/* Desktop center links */}
-            <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-              {link('home', 'Home')}
-              {link('home#rules', 'Rules')}
-            </nav>
+            {/* <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation"> */}
+              {/* {link('home', 'Home')} */}
+              {/* {link('home#rules', 'Rules')} */}
+            {/* </nav> */}
 
             {/* Right CTA */}
             <div className="flex items-center gap-3">
