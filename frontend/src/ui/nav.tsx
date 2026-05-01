@@ -58,7 +58,7 @@ function Nav({ route, setRoute }) {
     <>
       <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${scrolled ? 'py-3' : 'py-6'}`}>
         <div className="mx-auto max-w-[1400px]" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
-          <div className={`flex items-center justify-between rounded-full px-4 lg:px-6 py-3 transition-all ${scrolled ? 'glass' : ''}`}>
+          <div className={`flex items-center justify-between rounded-full px-4 lg:px-6 py-3 transition-all ${pastCta ? 'glass' : ''}`}>
             {/* Logo */}
             <button onClick={() => setRoute('home')} className="flex items-center gap-4 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/70 rounded-full px-2">
               <img src="/assets/Logo BW 2.png" alt="JNJD Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" width={40} height={40} />
