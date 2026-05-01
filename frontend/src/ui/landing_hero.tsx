@@ -10,12 +10,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 function CountdownDigit({ label, value }) {
   const paddedValue = pad(value);
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative" style={{ perspective: 800 }}>
+    <div className="flex flex-col items-center flex-1">
+      <div className="relative w-full" style={{ perspective: 800 }}>
         {/* Invisible spacer to maintain layout size */}
         {/* Fluid min-width: scales from ~64px on mobile to 90px on desktop */}
-        <div className="glass rounded-xl px-4 md:px-5 py-3 md:py-4 invisible flex items-center justify-center" style={{ minWidth: 'clamp(4rem, 8vw, 5.625rem)' }}>
-          <div className="t-display tabular-nums text-center" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>
+        <div className="glass rounded-xl px-2 py-3 md:py-4 invisible flex items-center justify-center w-full">
+          <div className="t-display tabular-nums text-center text-2xl md:text-3xl">
             00
           </div>
         </div>
@@ -30,7 +30,7 @@ function CountdownDigit({ label, value }) {
             className="absolute inset-0 glass rounded-xl flex items-center justify-center overflow-hidden"
             style={{ transformOrigin: 'center center' }}
           >
-            <div className="t-display gold-text tabular-nums text-center" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>
+            <div className="t-display gold-text tabular-nums text-center text-2xl md:text-3xl">
               {paddedValue}
             </div>
             {/* The split line should be part of the card so it flips with it! */}
@@ -54,7 +54,7 @@ function Hero() {
       <div className="absolute -right-[12%] top-[22%] w-[620px] h-[620px] orbit opacity-60 pointer-events-none" />
       <div className="absolute -right-[6%] top-[30%] w-[440px] h-[440px] orbit opacity-40 pointer-events-none" style={{ animationDirection: 'reverse', animationDuration: '48s' }} />
 
-      <div className="relative mx-auto max-w-[1400px] pt-40 pb-24 lg:pt-48 lg:pb-32" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
+      <div className="relative mx-auto max-w-[1400px] pt-32 pb-20 lg:pt-36 lg:pb-24" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
         {/* top strip */}
         <Reveal>
           <div className="flex items-center gap-4 mb-10">
@@ -64,11 +64,12 @@ function Hero() {
           </div>
         </Reveal>
 
-        {/* Title block */}
-        <div className="grid lg:grid-cols-12 gap-10 items-end">
-          <div className="lg:col-span-8">
+        {/* Title + Right column side-by-side */}
+        <div className="grid lg:grid-cols-12 gap-10 items-center">
+          {/* Left — title */}
+          <div className="lg:col-span-7">
             <Reveal delay={80}>
-              {/* Fluid hero type: 2.5rem on mobile → 8.125rem on large desktop, never causes horizontal scroll */}
+              {/* Fluid hero type: 2.5rem on mobile → 8.125rem on large desktop */}
               <h1 className="t-display" style={{ fontSize: 'clamp(2.5rem, 8vw, 8.125rem)' }}>
                 <span className="block text-bone-100">JOURNÉE</span>
                 <span className="block text-bone-100/95">NATIONALE <span className="shimmer-text">des</span></span>
@@ -79,47 +80,24 @@ function Hero() {
               </h1>
             </Reveal>
           </div>
-          <div className="lg:col-span-4 lg:pb-6">
-            <Reveal delay={220}>
-              <div className="t-mono text-[11px] tracking-[0.3em] text-gold-500 uppercase mb-4">The Agentic Shift</div>
-              <p className="text-lg md:text-xl text-bone-100/75 leading-relaxed" style={{ textWrap: 'pretty' }}>
-                Twenty years of Morocco's most rigorous student programming contest.
-                This edition: building systems that <em className="text-gold-300 not-italic">think, act, and adapt</em>.
-              </p>
-            </Reveal>
-          </div>
-        </div>
 
-        {/* Meta row */}
-        <Reveal delay={320}>
-          <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 hair-bottom pb-8">
-            <MetaItem label="Date" value="16 May 2026" sub="Saturday · 09:00 GMT+1" />
-            <MetaItem label="Venue" value="INPT Rabat" sub="Madinat Al Irfane" />
-            <MetaItem label="Participants" value="500+" sub="30+ institutions" />
-            <MetaItem label="Organiser" value="CIT" sub="Club Informatique & Télécom" />
-          </div>
-        </Reveal>
-
-        {/* Countdown + CTAs */}
-        <div className="mt-14 grid lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7">
-            <Reveal delay={120}>
-              <div className="flex items-end gap-3 md:gap-4 flex-wrap">
-                <CountdownDigit label="Days" value={d} />
-                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
-                <CountdownDigit label="Hours" value={h} />
-                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
-                <CountdownDigit label="Minutes" value={m} />
-                <span className="t-display text-gold-600/60 pb-7" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}>:</span>
-                <CountdownDigit label="Seconds" value={s} />
+          {/* Right — text, buttons, countdown */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
+            {/* The Agentic Shift */}
+            <Reveal delay={180}>
+              <div>
+                <div className="t-mono text-[11px] tracking-[0.3em] text-gold-500 uppercase mb-4">The Agentic Shift</div>
+                <p className="text-lg md:text-xl text-bone-100/75 leading-relaxed" style={{ textWrap: 'pretty' }}>
+                  Twenty years of Morocco's most rigorous student programming contest.
+                  This edition: building systems that <em className="text-gold-300 not-italic">think, act, and adapt</em>.
+                </p>
               </div>
             </Reveal>
-          </div>
 
-          <div className="lg:col-span-5">
-            <Reveal delay={220}>
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap gap-3">
+            {/* Register + Read rules + avatars */}
+            <Reveal delay={260}>
+              <div className="flex flex-col gap-4 mt-8">
+                <div id="hero-cta" className="flex flex-wrap gap-3">
                   <Magnetic>
                     <a href="#register" className="btn-primary">
                       Register a team <Icons.IconArrow size={16} />
@@ -143,8 +121,31 @@ function Hero() {
                 </div>
               </div>
             </Reveal>
+
+            {/* Countdown */}
+            <Reveal delay={340}>
+              <div className="flex items-end gap-2 mt-10">
+                <CountdownDigit label="Days" value={d} />
+                <span className="t-display text-gold-600/60 pb-6 text-xl">:</span>
+                <CountdownDigit label="Hours" value={h} />
+                <span className="t-display text-gold-600/60 pb-6 text-xl">:</span>
+                <CountdownDigit label="Minutes" value={m} />
+                <span className="t-display text-gold-600/60 pb-6 text-xl">:</span>
+                <CountdownDigit label="Seconds" value={s} />
+              </div>
+            </Reveal>
           </div>
         </div>
+
+        {/* Meta row */}
+        <Reveal delay={400}>
+          <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 hair-bottom pb-8">
+            <MetaItem label="Date" value="16 May 2026" sub="Saturday · 09:00 GMT+1" />
+            <MetaItem label="Venue" value="INPT Rabat" sub="Madinat Al Irfane" />
+            <MetaItem label="Participants" value="500+" sub="30+ institutions" />
+            <MetaItem label="Organiser" value="CIT" sub={"Club Informatique & Télécom"} />
+          </div>
+        </Reveal>
 
         {/* Scroll hint */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex flex-col items-center gap-2 opacity-70 hidden md:flex">

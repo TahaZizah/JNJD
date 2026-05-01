@@ -7,13 +7,30 @@ import { cn, Magnetic } from './utils';
 
 function Nav({ route, setRoute }) {
   const [scrolled, setScrolled] = React.useState(false);
+  const [pastHero, setPastHero] = React.useState(false);
+  const [pastCta, setPastCta] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 16);
+    const on = () => {
+      setScrolled(window.scrollY > 16);
+      setPastHero(window.scrollY > window.innerHeight * 0.85);
+    };
     on();
     window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);
+  }, []);
+
+  // Track when the hero register button scrolls out of view
+  React.useEffect(() => {
+    const el = document.getElementById('hero-cta');
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setPastCta(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   // Close mobile menu on route change
@@ -47,19 +64,22 @@ function Nav({ route, setRoute }) {
               <img src="/assets/Logo BW 2.png" alt="JNJD Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" width={40} height={40} />
             </button>
 
-            {/* Desktop center links */}
-            <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-              {link('home', 'Home')}
-              {link('home#rules', 'Rules')}
-            </nav>
+            {/* Desktop center — scroll-triggered event title */}
+            <div className="hidden md:flex items-center justify-center flex-1 min-w-0 overflow-hidden">
+              <span
+                className={`t-mono text-[10px] tracking-[0.25em] text-bone-100/60 uppercase whitespace-nowrap transition-all duration-500 ${pastCta ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+              >
+                Journée Nationale des Jeunes Développeurs
+              </span>
+            </div>
 
             {/* Right CTA */}
             <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 pr-2 border-r border-mist-400/15">
+              <div className={`hidden lg:flex items-center gap-2 transition-all duration-300 ${pastCta ? 'pr-2 border-r border-mist-400/15' : ''}`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-gold-400 dot-live" aria-hidden="true" />
                 <span className="t-mono text-[10px] tracking-[0.25em] text-bone-100/60 uppercase">May 16 · INPT Rabat</span>
               </div>
-              <div className="hidden md:block">
+              <div className={`hidden md:block transition-all duration-300 ${pastCta ? 'opacity-100 translate-y-0 max-w-[200px]' : 'opacity-0 translate-y-1 pointer-events-none max-w-0 overflow-hidden'}`}>
                 <Magnetic>
                   <button onClick={() => setRoute('home#register')} className="btn-primary text-sm py-3 px-5">
                     Register <Icons.IconArrow size={14} />
@@ -106,18 +126,11 @@ function Nav({ route, setRoute }) {
       >
         <div className="glass border-b border-gold-500/15 pt-24 pb-8" style={{ paddingLeft: 'var(--container-padding)', paddingRight: 'var(--container-padding)' }}>
           <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
-            {[
-              ['home', 'Home'],
-              ['home#rules', 'Rules'],
-            ].map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => { setRoute(id); setMobileOpen(false); }}
-                className="text-left t-mono text-sm tracking-[0.2em] uppercase py-3 px-2 text-bone-100 opacity-70 hover:opacity-100 transition border-b border-mist-400/10 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/70 rounded"
-              >
-                {label}
-              </button>
-            ))}
+            <div className="py-3 px-2">
+              <h2 className="t-display gold-text text-lg" style={{ letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                Journée Nationale des Jeunes Développeurs
+              </h2>
+            </div>
           </nav>
           <div className="mt-6">
             <button
