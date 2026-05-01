@@ -369,7 +369,6 @@ function StepTeam({ data, update }: any) {
       <div className="mb-8">
         <div className="t-mono text-[10px] tracking-[0.3em] uppercase text-gold-500 mb-2">01 · Identity</div>
         <h3 className="t-display text-3xl md:text-4xl text-bone-100">Name your team.</h3>
-        <p className="text-bone-100/60 mt-2">Pick something memorable — you'll wear it for the next six months.</p>
       </div>
       <div className="grid md:grid-cols-2 gap-5">
         <div className="md:col-span-2">
