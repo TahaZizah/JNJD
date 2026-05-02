@@ -7,6 +7,7 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.codec.RedisCodec;
@@ -35,11 +36,20 @@ public class RateLimitService {
     @Value("${spring.data.redis.port:6379}")
     private int redisPort;
 
+    @Value("${spring.data.redis.password:}")
+    private String redisPassword;
+
     private ProxyManager<String> proxyManager;
 
     @PostConstruct
     public void init() {
-        RedisClient redisClient = RedisClient.create("redis://" + redisHost + ":" + redisPort);
+        RedisURI.Builder uriBuilder = RedisURI.builder()
+                .withHost(redisHost)
+                .withPort(redisPort);
+        if (redisPassword != null && !redisPassword.isBlank()) {
+            uriBuilder.withPassword(redisPassword.toCharArray());
+        }
+        RedisClient redisClient = RedisClient.create(uriBuilder.build());
         StatefulRedisConnection<String, byte[]> connection = redisClient.connect(
             RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE)
         );
