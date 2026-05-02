@@ -12,7 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - jnjd-net
     healthcheck:
@@ -26,12 +26,15 @@ services:
     image: redis:7-alpine
     container_name: jnjd-redis
     restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     networks:
       - jnjd-net
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "$$REDIS_PASSWORD", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,8 +51,8 @@ services:
     volumes:
       - miniodata:/data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
     networks:
       - jnjd-net
     healthcheck:
@@ -88,8 +91,8 @@ services:
     container_name: jnjd-mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"   # SMTP
-      - "8025:8025"   # Web UI
+      - "127.0.0.1:1025:1025"   # SMTP
+      - "127.0.0.1:8025:8025"   # Web UI
     networks:
       - jnjd-net
 
@@ -114,6 +117,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -133,7 +137,7 @@ services:
       MAIL_FROM: ${MAIL_FROM}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     networks:
       - jnjd-net
     healthcheck:
