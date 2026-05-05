@@ -169,7 +169,7 @@ function Rules() {
             <div className="glass rounded-2xl p-2 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-mist-400/10 rounded-xl overflow-hidden">
                 {[
-                  { step: '01', t: 'Register team', d: 'Until 05 May 2026', icon: IconUsers },
+                  { step: '01', t: 'Register team', d: 'Until 12 May 2026', icon: IconUsers },
                   { step: '02', t: 'Pay fee (180 MAD)', d: 'Bank transfer or on-site', icon: IconBrief },
                   { step: '03', t: 'Finals @ INPT',   d: '16 May · Rabat',  icon: IconCrown },
                 ].map((s, i) => (
