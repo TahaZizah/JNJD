@@ -82,6 +82,9 @@ class RegistrationIntegrationTest {
         // Disable email
         registry.add("spring.mail.host",            () -> "localhost");
         registry.add("spring.mail.port",            () -> "3025");
+
+        // Raise rate-limit cap so concurrent tests (50 threads, same IP) don't get 429
+        registry.add("app.rate-limit.registration.capacity", () -> "100");
     }
 
     @LocalServerPort int port;
