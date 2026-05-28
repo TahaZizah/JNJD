@@ -1,0 +1,76 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, "feature/**"] # CI on feature branches + triggers deploy on main
+  pull_request:
+    branches: [main] # CI on PRs targeting main
+
+jobs:
+  backend-ci:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build & test
+        working-directory: backend
+        run: mvn verify -q
+
+  frontend-ci:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+        working-directory: frontend
+
+      - run: npm run build
+        working-directory: frontend
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [backend-ci, frontend-ci]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.SERVER_DEPLOY_PATH }}
+            echo "── Pulling latest code ──"
+            git pull origin main
+
+            echo "── Rebuilding containers ──"
+            docker compose --env-file .env up -d --build
+
+            echo "── Waiting for backend to be healthy ──"
+            for i in $(seq 1 12); do
+              STATUS=$(curl -sf http://localhost:8080/actuator/health | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])" 2>/dev/null || echo "DOWN")
+              echo "[$i/12] Backend: $STATUS"
+              [ "$STATUS" = "UP" ] && echo "Deployment successful" && exit 0
+              sleep 10
+            done
+
+            echo "Health check failed — dumping logs"
+            docker compose logs --tail=50 backend
+            exit 1
