@@ -1,4 +1,4 @@
-# JNJD 19th Edition — Registration Application
+# JNJD 20th Edition — Registration Application
 
 Full-stack registration app replacing Google Forms. Built with React/Vite (frontend), Spring Boot 3 (backend), PostgreSQL 16, MinIO (file storage), and Redis (rate limiting). All services containerized with Docker Compose.
 
