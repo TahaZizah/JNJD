@@ -124,7 +124,10 @@ function Hero() {
 
             {/* Countdown */}
             <Reveal delay={340}>
-              <div className="flex items-end gap-2 mt-10">
+              <div className="t-mono text-[10px] tracking-[0.2em] text-bone-100/40 uppercase mt-10 mb-3">
+                {d} days since the event · 16 May 2026
+              </div>
+              <div className="flex items-end gap-2">
                 <CountdownDigit label="Days" value={d} />
                 <span className="t-display text-gold-600/60 pb-6 text-xl">:</span>
                 <CountdownDigit label="Hours" value={h} />
